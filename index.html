@@ -1,0 +1,38 @@
+<hr><h1>
+    PRS <sup style="font-size:medium">
+    
+        [<a href="https://github.com/lorenasandoval88/diseasomes" target="_blank">code</a>]
+        [<a href="https://observablehq.com/@lorenasandoval88/riskome" target="_blank">notebook</a>]
+        [<a href="https://gitter.im/episphere/PRS">discussion</a>]
+        [<img style = "vertical-align:bottom" src="youtube_img.png" class="Lgo" width="25" height="25" alt="playbutton">
+        <a href="https://youtu.be/YXJjEZxHJhM" target="_blank">tutorial</a>]</sup>
+    <br><span style="font-size:medium;color:navy;font-weight:normal">Individual polygenic risk score calculation (<a href="https://www.nature.com/articles/nrg.2016.27" target="_blank">PRS</a>) for 23andme reports, using the <a href='https://www.pgscatalog.org' target="_blank">PGS Catalog</a>.</span>
+    <hr></hr>
+    
+    <span style="font-size:small">Privacy notice:</span><span style="font-size:small;color:navy;font-weight:normal"> All data and calculations take place in the browser. No data or calculations circulate by a server. <b>This application is, foremost, an exercise in privacy-preserving biomedical informatics for consumer genomics data</b>.</span>
+    <br><span style="font-size:small;">Scope/Limitations:</span><span style="font-size:small;color:navy;font-weight:normal">This calculator was devised as an implementation proof of concept. It has a number of important limitations for epidemiology research and it does not meet criteria for clinical use. The current tool uses pre-imputation genotype data and thus results in a low number of SNP matches. Most important, only the relative risk model <a href='https://www.nature.com/articles/nrg.2016.27#Sec5' target="_blank">(Box 1, eq 2)</a> is calculated, with no effort to determine absolute risk of disease. Finally, the risk calculation will only be attempted for PGS catalog entries reporting effects as beta values under "effect_weight".</span>
+    
+    <hr></hr>
+    
+    <head></head>
+    
+    <!-- setting generic styling, borrowed from the parent page -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="app.css" rel="stylesheet">
+    
+    <script>
+        (async ()=>{
+            pgs23 = await import('http://127.0.0.1:5501/export.js')
+            //pgs23 = await import(location.href+'/export.js')
+            //pgs23 = await import('https://lorenasandoval88.github.io/diseasomes/export.js')
+            pgs23.ui()
+        })() 
+    </script>
+    
+    
+    <script src="pgs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js"></script>
+    
+    </script>
+    
+    
