@@ -1,4 +1,4 @@
-<hr><h1>
+
 
     <head>
         <meta charset="UTF-8">
@@ -13,92 +13,84 @@
     </head>
 
 
-     <!-- main banner -->
-     <section class="bgimage" id="home">
-        <div class="container-fluid">
-            <div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hero-text">
-                <h2 class="hero_title">Riskome</h2>
-                <p class="hero_desc">Individual polygenic risk score calculation (<a href="https://www.nature.com/articles/nrg.2016.27" target="_blank">PRS</a>) for 23andme reports, using the <a href='https://www.pgscatalog.org' target="_blank">PGS Catalog</a>.</p>
-            </div>
-            </div>
-        </div>
-    </section>
 
-    
-
-     <!-- nav bar -->
-    <nav class="navbar navbar-expand-lg fixed-top navbarScroll">
-    <div class="container">
-        <a class="navbar-brand" href="#">Brad</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#home">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#about">Privacy</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#services">Services</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#portfolio">Portfolio</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#contact">Contact</a>
-                </li>
-            </ul>
-            
-        </div>
-    </div>
-</nav>
-
-<!-- privacy section-->
-<section id="about">
-    <div class="container">
-        <p>
-            All data and calculations take place in the browser. No data or calculations circulate by a server. <b>This application is, foremost, an exercise in privacy-preserving biomedical informatics for consumer genomics data</b>
-        </p>
-        </div>
-
-</section>
-
+<!-- old html -->
 
         [<a href="https://github.com/lorenasandoval88/diseasomes" target="_blank">code</a>]
         [<a href="https://observablehq.com/@lorenasandoval88/riskome" target="_blank">notebook</a>]
         [<a href="https://gitter.im/episphere/PRS">discussion</a>]
         [<img style = "vertical-align:bottom" src="youtube_img.png" class="Lgo" width="25" height="25" alt="playbutton">
         <a href="https://youtu.be/YXJjEZxHJhM" target="_blank">tutorial</a>]</sup>
-    <hr></hr>
+
     
 
-    <br><span style="font-size:small;">Scope/Limitations:</span><span style="font-size:small;color:navy;font-weight:normal">This calculator was devised as an implementation proof of concept. It has a number of important limitations for epidemiology research and it does not meet criteria for clinical use. The current tool uses pre-imputation genotype data and thus results in a low number of SNP matches. Most important, only the relative risk model <a href='https://www.nature.com/articles/nrg.2016.27#Sec5' target="_blank">(Box 1, eq 2)</a> is calculated, with no effort to determine absolute risk of disease. Finally, the risk calculation will only be attempted for PGS catalog entries reporting effects as beta values under "effect_weight".</span>
     
-    <hr></hr>
+
     
-    <head></head>
+<!-- side panel -->
+
+<body>
     
-    <!-- setting generic styling, borrowed from the parent page -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="app.css" rel="stylesheet">
-    
+<!-- main banner -->
+<section class="bgimage" id="home">
+       <div class="container-fluid">
+           <div class="row">
+           <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hero-text">
+               <h2 class="hero_title">Riskome</h2>
+               <p class="hero_desc">Individual polygenic risk score<br>  calculation (<a href="https://www.nature.com/articles/nrg.2016.27" target="_blank">PRS</a>)for 23andme reports, using the <a href='https://www.pgscatalog.org' target="_blank">PGS Catalog</a>.</p>
+           </div>
+           </div>
+       </div>
+       <div id="mySidepanel" class="sidepanel">
+           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+           <a class="nav-link" href="#calculator">Calculator</a>
+           <a class="nav-link" href="#notices">Notices</a>
+           <a href="#">Clients</a>
+           <a href="#">Contact</a>
+         </div>
+         
+         <button class="openbtn" onclick="openNav()">☰ </button>  
+         <script>
+           function openNav() {
+             document.getElementById("mySidepanel").style.width = "250px";
+           }
+           
+           function closeNav() {
+             document.getElementById("mySidepanel").style.width = "0";
+           }
+           </script>
+           
+   </section>
+
+<!-- privacy section-->
+<section id="calculator">
+    <span style="font-size:large;">Polygenic Risk Score Calculator:</span><br><br>
+    <div id = "calcDiv">
     <script>
         (async ()=>{
-            pgs23 = await import('http://127.0.0.1:5501/export.js')
+            pgs23 = await import('http://127.0.0.1:5500/script.js')
             //pgs23 = await import(location.href+'/export.js')
             //pgs23 = await import('https://lorenasandoval88.github.io/diseasomes/export.js')
             pgs23.ui()
         })() 
     </script>
-    
-    
-      <!-- load javascript after loading all html content -->
-      <script src="script.js"></script>
-    
-    </script>
-    
-    
+    </div>
+</section>
+
+        <!-- privacy section-->
+<section id="notices">
+    <span style="font-size:large;">Privacy:</span><br>
+    <span style="font-size:small;color:black;font-weight:normal">
+            All data and calculations take place in the browser. No data or calculations circulate by a server. This application is, foremost, an exercise in privacy-preserving biomedical informatics for consumer genomics data.
+    </span><br>
+    <span style="font-size:large;">Scope/Limitations:</span><br>
+    <span style="font-size:small;color:black;font-weight:normal">
+        This calculator was devised as an implementation proof of concept. It has a number of important limitations for epidemiology research and it does not meet criteria for clinical use. The current tool uses pre-imputation genotype data and thus results in a low number of SNP matches. Most important, only the relative risk model <a href='https://www.nature.com/articles/nrg.2016.27#Sec5' target="_blank">(Box 1, eq 2)</a> is calculated, with no effort to determine absolute risk of disease. Finally, the risk calculation will only be attempted for PGS catalog entries reporting effects as beta values under "effect_weight".</span>
+</section>
+
+
+
+
+  <!-- load javascript after loading all html content -->
+  <script src="script.js"></script>
+</body>
