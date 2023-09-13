@@ -13,20 +13,42 @@
     </head>
 
 
+<!-- top banner -->
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark justify-content-end">
+    <div id="mySidepanel" class="sidepanel">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+          <a class="nav-link" href="#calculator">Calculator</a>
+        <a class="nav-link" href="#notices">Notices</a>
+   
+        </div>
+          <button class="openbtn" onclick="openNav()">☰ </button>  
+      <script>
+        function openNav() {
+          document.getElementById("mySidepanel").style.width = "250px";
+        }
+        
+        function closeNav() {
+          document.getElementById("mySidepanel").style.width = "0";
+        }
+        </script>
 
-<!-- old html -->
-
-        [<a href="https://github.com/lorenasandoval88/diseasomes" target="_blank">code</a>]
-        [<a href="https://observablehq.com/@lorenasandoval88/riskome" target="_blank">notebook</a>]
-        [<a href="https://gitter.im/episphere/PRS">discussion</a>]
-        [<img style = "vertical-align:bottom" src="youtube_img.png" class="Lgo" width="25" height="25" alt="playbutton">
-        <a href="https://youtu.be/YXJjEZxHJhM" target="_blank">tutorial</a>]</sup>
-
-    
-
-    
-
-    
+    <ul class="navbar-nav text-right">
+    <li class="nav-item active"> 
+        <a class="nav-link" target="_blank" href="https://github.com/lorenasandoval88/diseasomes">Github Code</a>
+    </li>
+    <li class="nav-item active"> 
+        <a class="nav-link" target="_blank" href="https://youtu.be/YXJjEZxHJhM">
+        <img style = "vertical-align:top" src="youtube_img.png"  width="25" height="25" ></img> Tutorial</a>
+    </li>
+    <li class="nav-item active"> 
+        <a class="nav-link" target="_blank" href="https://observablehq.com/@lorenasandoval88/riskome" target="_blank">Notebook</a>
+    </li>
+    <li class="nav-item active"> 
+        <a class="nav-link" target="_blank" href="https://gitter.im/episphere/PRS">Discussion</a>
+    </li>
+  </ul>
+</nav>
+   
 <!-- side panel -->
 
 <body>
@@ -40,26 +62,7 @@
                <p class="hero_desc">Individual polygenic risk score<br>  calculation (<a href="https://www.nature.com/articles/nrg.2016.27" target="_blank">PRS</a>) for 23andme reports, using the <a href='https://www.pgscatalog.org' target="_blank">PGS Catalog</a>.</p>
            </div>
            </div>
-       </div>
-       <div id="mySidepanel" class="sidepanel">
-           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-           <a class="nav-link" href="#calculator">Calculator</a>
-           <a class="nav-link" href="#notices">Notices</a>
-           <a href="#">Clients</a>
-           <a href="#">Contact</a>
-         </div>
-         
-         <button class="openbtn" onclick="openNav()">☰ </button>  
-         <script>
-           function openNav() {
-             document.getElementById("mySidepanel").style.width = "250px";
-           }
-           
-           function closeNav() {
-             document.getElementById("mySidepanel").style.width = "0";
-           }
-           </script>
-           
+       </div>           
    </section>
 
 <!-- privacy section-->
