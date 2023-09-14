@@ -88,8 +88,26 @@
         </div>
     </section>
 
-    <!-- privacy section-->
-    <section id="notices">
+  
+
+
+    <!-- load javascript after loading all html content -->
+    <script>
+        (async ()=>{
+            //pgs23 = await import('http://127.0.0.1:5501/export.js')
+            pgs23 = await import('https://episphere.github.io/riskome/export.js')
+            pgs23.ui()
+        })() 
+    </script>
+    
+    
+    <script src="pgs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js"></script>
+    <script src="export.js"></script>
+
+
+      <!-- privacy section-->
+      <section id="notices">
         <span style="font-size:large;">Privacy:</span><br>
         <span style="font-size:small;color:black;font-weight:normal">
             All data and calculations take place in the browser. No data or calculations circulate by a server. This
@@ -108,19 +126,4 @@
     </section>
 
 
-
-
-    <!-- load javascript after loading all html content -->
-    <script>
-        (async ()=>{
-            //pgs23 = await import('http://127.0.0.1:5501/export.js')
-            pgs23 = await import('https://epishpere.github.io/riskome/export.js')
-            pgs23.ui()
-        })() 
-    </script>
-    
-    
-    <script src="pgs.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js"></script>
-    <script src="export.js"></script>
 </body>
