@@ -104,3 +104,12 @@
   .openbtn:hover {
     background-color:#444;
   }
+
+  /* nav bar*/
+  @media (min-width: 768px) {
+    .navbar-nav.navbar-center {
+      position: absolute;
+      left: 50%;
+      transform: translatex(-50%);
+    }
+  }
