@@ -1,4 +1,6 @@
 console.log("export.js loaded")
+
+// import {math} from '/sdk.js'
 // to inspect all data in the console
 // dataObj=document.getElementById("PGS23calc").PGS23data
 
@@ -6,7 +8,7 @@ console.log("export.js loaded")
 // Specifically the pgs library is a dependency satisfied by script tag loading
 if (typeof (pgs) == 'undefined') {
     let s = document.createElement('script')
-    s.src = 'https://github.com/lorenasandoval88/diseasomes/pgs.js'
+    s.src = 'https://episphere.github.io/riskome/pgs.js'
     document.head.appendChild(s)
 }
 if (typeof (JSZip) == 'undefined') {
@@ -878,7 +880,13 @@ function pieChart(data = PGS23.data) {
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 
+async function Test(){
+    console.log("lala")
+}
+Test()
+
 export {
+    Test,
     ui,
     PGS23,
     parsePGS,

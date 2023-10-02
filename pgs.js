@@ -1,11 +1,11 @@
 console.log('pgs.js loaded')
-
 pgs = {date:Date()}
 
 
 pgs.loadScript=async(url)=>{
     let s = document.createElement('script')
     s.src=url
+    console.log("s",s)
     return document.head.appendChild(s)
 }
 pgs.piechart =  function(data,div){
@@ -538,11 +538,11 @@ pgs.score={}
 
 
 pgs.loadDependencies=function(){
-    pgs.loadScript("https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.11/pako.min.js").then(s=>{
-        s.onload=function(){
-            pgs.pako=pako
-        }
-    })
+    // pgs.loadScript("https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.11/pako.min.js").then(s=>{
+    //     s.onload=function(){
+    //         pgs.pako=pako
+    //     }
+    // })
     pgs.loadScript("https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js").then(s=>{
         s.onload=function(){
             pgs.localforage=localforage
@@ -660,12 +660,12 @@ pgs.ini=()=>{ // act on context, such as search parameters. Not called automatic
 if(typeof(define)!="undefined"){
     //define(pgs)
     define(['https://cdn.plot.ly/plotly-2.18.2.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/mathjs/1.5.2/math.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.3/pako.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js'],function(Plotly,math,pako,localforage){
+    // 'https://cdnjs.cloudflare.com/ajax/libs/mathjs/1.5.2/math.min.js',
+    // 'https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.3/pako.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js'],function(Plotly,localforage){
         pgs.Plotly = Plotly
         pgs.math = math
-        pgs.pako = pako
+        //pgs.pako = pako
         pgs.localforage=localforage
         return pgs
     })
