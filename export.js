@@ -8,7 +8,7 @@ console.log("export.js loaded")
 // Specifically the pgs library is a dependency satisfied by script tag loading
 if (typeof (pgs) == 'undefined') {
     let s = document.createElement('script')
-    s.src = 'https://episphere.github.io/riskome/pgs.js'
+    s.src = 'https://episphere.github.io/diseasome/pgs.js'
     document.head.appendChild(s)
 }
 if (typeof (JSZip) == 'undefined') {
