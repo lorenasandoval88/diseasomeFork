@@ -7,6 +7,11 @@ import {
 } from './export.js'
 
 import { 
+    pgs,
+} from './pgs.js'
+
+
+import { 
 clearCache,
 endpointStore,
 // math,
@@ -15,8 +20,8 @@ plotly,
 localforage,
 } from './dependencies.js'
 
-console.log(pako)
 export{
+    pgs,
     clearCache,
     endpointStore,
     // math,

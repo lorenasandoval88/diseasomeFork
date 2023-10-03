@@ -1,15 +1,60 @@
-import * as sdk from "./dependencies.js";
-console.log("pako",sdk.pako)
+import * as sdk from "./sdk.js";
 
 
-console.log('pgs.js loaded')
 let pgs = {date:Date()}
+
+async function loadScript(url){
+    let s = document.createElement('script')
+    s.src=url
+    return document.head.appendChild(s)
+}
+
+// async function loadScore(entry='PGS000004',build=37,range){
+//     let txt = ""
+//     if(typeof(entry)=='number'){
+//         entry = entry.toString()
+//         entry = "PGS000000".slice(0,-entry.length)+entry
+//     }
+//     //console.log(entry)
+//     // https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/PGS000004/ScoringFiles/Harmonized/PGS000004_hmPOS_GRCh37.txt.gz
+//     const url = `https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/${entry}/ScoringFiles/Harmonized/${entry}_hmPOS_GRCh${build}.txt.gz`//
+ 
+//     if(range){
+//         if(typeof(range)=='number'){
+//             range=[0,range]
+//         }
+//         //debugger
+ 
+//         txt= sdk.pako.inflate(await (await fetch(url,{
+//             headers:{
+//                 'content-type': 'multipart/byteranges',
+//                 'range': `bytes=${range.join('-')}`,
+//             }
+//         })).arrayBuffer(),{to:'string'})
+        
+//         //debugger
+//     }else{
+//         txt = sdk.pako.inflate(await (await fetch(url)).arrayBuffer(),{to:'string'})
+
+//     }
+//     // Check if PGS catalog FTP site is down-----------------------
+//        let response
+//        response = await fetch(url) // testing url 'https://httpbin.org/status/429'
+//        if (response?.ok) {
+//            //console.log('Use the response here!');
+//          } else {
+//         txt = `:( Error loading PGS file. HTTP Response Code: ${response?.status}`
+//         document.getElementById('pgsTextArea').value = txt
+//          }
+//    //-------------------------------------------------------
+//     return txt
+// }
+
 
 
 pgs.loadScript=async(url)=>{
     let s = document.createElement('script')
     s.src=url
-    console.log("s",s)
     return document.head.appendChild(s)
 }
 pgs.piechart =  function(data,div){
@@ -675,4 +720,10 @@ if(typeof(define)!="undefined"){
     pgs.loadDependencies()
 }
 
+export{
+    pgs,
+    sdk,
+    loadScript,
+   // loadScore
+}
 

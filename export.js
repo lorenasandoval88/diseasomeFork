@@ -1,5 +1,9 @@
 console.log("export.js loaded")
+import { 
+    pgs,
+} from './pgs.js'
 
+console.log("export pgs:", pgs)
 // import {math} from '/sdk.js'
 // to inspect all data in the console
 // dataObj=document.getElementById("PGS23calc").PGS23data
