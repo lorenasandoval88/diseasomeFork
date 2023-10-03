@@ -1,5 +1,4 @@
 import { 
-    Test,
     PGS23,
     parsePGS,
     parse23,
@@ -11,16 +10,18 @@ import {
 clearCache,
 endpointStore,
 // math,
-// pako,
-plotly
+pako,
+plotly,
+localforage,
 } from './dependencies.js'
 
+console.log(pako)
 export{
     clearCache,
     endpointStore,
-    Test,
     // math,
-    // pako,
+    pako,
+    localforage,
     PGS23,
     parsePGS,
     parse23,

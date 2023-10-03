@@ -1,6 +1,6 @@
 //let math = require('https://cdnjs.cloudflare.com/ajax/libs/mathjs/1.5.2/math.min.js')
 import plotly from 'https://cdn.jsdelivr.net/npm/plotly.js-dist/+esm';
-//let  pako= require('https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.11/pako.min.js')
+import pako from 'https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.esm.mjs'
 import localforage from 'https://cdn.skypack.dev/localforage';
 let updateCount = 0;
 const dbName = "localforage"
@@ -26,7 +26,7 @@ function clearCache(){
 
 export{
   //  math,
-   // pako,
+  pako,
     plotly,
     localforage,
     clearCache,

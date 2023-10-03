@@ -838,9 +838,7 @@ function pieChart(data = PGS23.data) {
         marker: {
             colors: ["#2ca02c", "grey"],
             size: 19,
-            line: {
-                color: 'black'
-            }
+            line: {color: 'black' }
         },
         textfont: {
             color: 'black',
@@ -859,16 +857,12 @@ function pieChart(data = PGS23.data) {
     var layout = {
         title: {
         text:` PGS#${data.pgs.meta.pgs_id.replace(/^.*0+/,'')}: total β contribution for ${data.pgsMatchMy23.length} matched <br>and ${data.pgs.dt.length-data.pgsMatchMy23.length} unmatched variants`,
-        font: {
-            size: 19
-        }
+        font: {size: 19}
      },
         width:'20em',
         legend: {
            xanchor:"right",
-            font: {
-                size: 16
-            }
+            font: { size: 16 }
         },
     };
     var config = {
@@ -880,13 +874,7 @@ function pieChart(data = PGS23.data) {
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 
-async function Test(){
-    console.log("lala")
-}
-Test()
-
 export {
-    Test,
     ui,
     PGS23,
     parsePGS,

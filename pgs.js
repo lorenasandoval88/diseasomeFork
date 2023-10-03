@@ -1,5 +1,9 @@
+import * as sdk from "./dependencies.js";
+console.log("pako",sdk.pako)
+
+
 console.log('pgs.js loaded')
-pgs = {date:Date()}
+let pgs = {date:Date()}
 
 
 pgs.loadScript=async(url)=>{
@@ -38,7 +42,7 @@ pgs.piechart =  function(data,div){
     })
 }
 
-getInfoSnps= async function(data){
+let getInfoSnps= async function(data){
     var dat = data
     const sleep = ms => new Promise(r => setTimeout(r, ms));
       var rs = dat.calcRiskScore
@@ -403,18 +407,16 @@ pgs.loadScore=async(entry='PGS000004',build=37,range)=>{
         }
         //debugger
  
-        txt= pgs.pako.inflate(await (await fetch(url,{
+        txt= sdk.pako.inflate(await (await fetch(url,{
             headers:{
                 'content-type': 'multipart/byteranges',
                 'range': `bytes=${range.join('-')}`,
             }
         })).arrayBuffer(),{to:'string'})
-
-       
         
         //debugger
     }else{
-        txt = pgs.pako.inflate(await (await fetch(url)).arrayBuffer(),{to:'string'})
+        txt = sdk.pako.inflate(await (await fetch(url)).arrayBuffer(),{to:'string'})
 
     }
     // Check if PGS catalog FTP site is down-----------------------
@@ -538,11 +540,11 @@ pgs.score={}
 
 
 pgs.loadDependencies=function(){
-    // pgs.loadScript("https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.11/pako.min.js").then(s=>{
-    //     s.onload=function(){
-    //         pgs.pako=pako
-    //     }
-    // })
+//     pgs.loadScript("https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.11/pako.min.js").then(s=>{
+//         s.onload=function(){
+//             pgs.pako=pako
+//         }
+//     })
     pgs.loadScript("https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js").then(s=>{
         s.onload=function(){
             pgs.localforage=localforage
@@ -661,7 +663,7 @@ if(typeof(define)!="undefined"){
     //define(pgs)
     define(['https://cdn.plot.ly/plotly-2.18.2.min.js',
     // 'https://cdnjs.cloudflare.com/ajax/libs/mathjs/1.5.2/math.min.js',
-    // 'https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.3/pako.min.js',
+     'https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.3/pako.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js'],function(Plotly,localforage){
         pgs.Plotly = Plotly
         pgs.math = math
@@ -672,3 +674,5 @@ if(typeof(define)!="undefined"){
 }else{
     pgs.loadDependencies()
 }
+
+
