@@ -291,11 +291,11 @@ plot.plotAllMatchByEffect4  = async function(data, errorDiv ,dv) {
     data.plot.traces = traces
 
     plotly.newPlot(dv, traces, layout, config)
-    tabulateAllMatchByEffect()
+    tabulateAllMatchByEffect(PGS23.data,document.getElementById('tabulateAllMatchByEffectDiv'))
 }
 
 /* Plot percent of matched and not matched betas */
-tabulateAllMatchByEffect = async function(data = PGS23.data, div = document.getElementById('tabulateAllMatchByEffectDiv')) {
+tabulateAllMatchByEffect = async function(data , div ) {
 
     if (!div) {
         div = document.createElement('div')
