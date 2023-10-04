@@ -295,7 +295,7 @@ plot.plotAllMatchByEffect4  = async function(data, errorDiv ,dv) {
 }
 
 /* Plot percent of matched and not matched betas */
-plot.tabulateAllMatchByEffect = async function(data = PGS23.data, div = document.getElementById('tabulateAllMatchByEffectDiv')) {
+tabulateAllMatchByEffect = async function(data = PGS23.data, div = document.getElementById('tabulateAllMatchByEffectDiv')) {
 
     if (!div) {
         div = document.createElement('div')
