@@ -7,7 +7,7 @@ import {
 
 import { 
     plot
-} from './plot.js' 
+} from './sdk/plot.js' 
 
 import { 
     pgs,
