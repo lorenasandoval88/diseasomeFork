@@ -1,7 +1,7 @@
 console.log("main.js loaded")
 import { pgs} from './pgs.js'
 import {plotly,JSZip} from "./dependencies.js";
-import { plotAllMatchByEffect4} from './sdk/plot.js'
+import { plot} from './sdk/plot.js'
 
 
 // This library uses ES6 modules
@@ -297,7 +297,7 @@ PGS23.Match2 = function (data, progressReport) {
                 document.getElementById('my23CalcTextArea').value += ` Found ${data.pgsMatchMy23.length} PGS matches to the 23andme report.`
                 document.getElementById('plotRiskDiv').hidden = true
                 document.getElementById('hidenCalc').hidden = false
-                plotAllMatchByEffect4(data = PGS23.data, document.getElementById('errorDiv'),document.getElementById('plotAllMatchByEffectDiv') )          
+                plot.plotAllMatchByEffect4(data = PGS23.data, document.getElementById('errorDiv'),document.getElementById('plotAllMatchByEffectDiv') )          
         // all betas greater than zero
         //} else if (data.pgs.dt[weight_idx].reduce((a, b) => Math.min(a, b)) > -0.00002 ) { //&&(calcRiskScore.reduce((a,b)=>Math.max(a,b))<=1)){ // hazard ratios?
             } else if (weights.reduce((a, b) => Math.min(a, b)) > -0.00002 ) { //&&(calcRiskScore.reduce((a,b)=>Math.max(a,b))<=1)){ // hazard ratios?
@@ -307,7 +307,7 @@ PGS23.Match2 = function (data, progressReport) {
                 document.getElementById('my23CalcTextArea').value += ` However, these don't look right (betas = false), QAQC FAILED ! ... You could look for another entry for the same trait where betas pass QAQC, maybe give it a try at https://www.pgscatalog.org/search/?q=${data.pgs.meta.trait_mapped.replace(' ','+')}.`
                 document.getElementById('plotRiskDiv').hidden = true
                 document.getElementById('hidenCalc').hidden = false
-                plotAllMatchByEffect4(data = PGS23.data,  document.getElementById('errorDiv'),document.getElementById('plotAllMatchByEffectDiv') )          
+                plot.plotAllMatchByEffect4(data = PGS23.data,  document.getElementById('errorDiv'),document.getElementById('plotAllMatchByEffectDiv') )          
                 pieChart()
             // large betas over 100
            // }else if (calcRiskScore.reduce((a, b) => Math.max(a, b)) > 100) { //&&(calcRiskScore.reduce((a,b)=>Math.max(a,b))<=1)){ // hazard ratios?
@@ -317,7 +317,7 @@ PGS23.Match2 = function (data, progressReport) {
                 document.getElementById('plotRiskDiv').hidden = true
                 document.getElementById('hidenCalc').hidden = false
                 data.PRS = Math.exp(calcRiskScore.reduce((a, b) => a + b))
-                plotAllMatchByEffect4(data = PGS23.data, document.getElementById('errorDiv'), document.getElementById('plotAllMatchByEffectDiv') )          
+                plot.plotAllMatchByEffect4(data = PGS23.data, document.getElementById('errorDiv'), document.getElementById('plotAllMatchByEffectDiv') )          
                 pieChart()
             } else {
                 data.PRS = Math.exp(calcRiskScore.reduce((a, b) => a + b))
@@ -326,7 +326,7 @@ PGS23.Match2 = function (data, progressReport) {
                 document.getElementById('plotRiskDiv').hidden = false
                 document.getElementById('hidenCalc').hidden = false
                 //ploting
-                plotAllMatchByEffect4(data = PGS23.data,document.getElementById('errorDiv'), document.getElementById('plotAllMatchByEffectDiv') )          
+                plot.plotAllMatchByEffect4(data = PGS23.data,document.getElementById('errorDiv'), document.getElementById('plotAllMatchByEffectDiv') )          
                 pieChart()
             }
             document.querySelector('#buttonCalculateRisk').disabled = false
