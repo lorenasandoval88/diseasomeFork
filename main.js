@@ -1,7 +1,7 @@
 console.log("main.js loaded")
 import { pgs} from './pgs.js'
 import {plotly,JSZip} from "./dependencies.js";
-import { plotAllMatchByEffect4} from './sdk/plot.js'
+import { plotAllMatchByEffect4} from '../plot.js'
 
 
 // This library uses ES6 modules
