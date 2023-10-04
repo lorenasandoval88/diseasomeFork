@@ -2,9 +2,12 @@ import {
     PGS23,
     parsePGS,
     parse23,
-    plotAllMatchByEffect4,
     ui
-} from './export.js'
+} from './main.js'
+
+import { 
+    plotAllMatchByEffect4
+} from '../plot.js' 
 
 import { 
     pgs,

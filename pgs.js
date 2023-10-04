@@ -413,8 +413,4 @@ pgs.ini=()=>{ // act on context, such as search parameters. Not called automatic
 }
 
 
-
-export{
-    pgs,
-}
-
+export{ pgs}
