@@ -1,7 +1,10 @@
 import {plotly} from "../dependencies.js";
 import {PGS23} from "../main.js"; 
 
-function plotAllMatchByEffect4(data, errorDiv ,dv) {
+
+let plot = {}
+
+plot.plotAllMatchByEffect4  = async function(data, errorDiv ,dv) {
     //https://community.plotly.com/t/fill-shade-a-chart-above-a-specific-y-value-in-plotlyjs/5133
 
     const obj = {}
@@ -292,7 +295,7 @@ function plotAllMatchByEffect4(data, errorDiv ,dv) {
 }
 
 /* Plot percent of matched and not matched betas */
-function tabulateAllMatchByEffect(data = PGS23.data, div = document.getElementById('tabulateAllMatchByEffectDiv')) {
+plot.tabulateAllMatchByEffect = async function(data = PGS23.data, div = document.getElementById('tabulateAllMatchByEffectDiv')) {
 
     if (!div) {
         div = document.createElement('div')
