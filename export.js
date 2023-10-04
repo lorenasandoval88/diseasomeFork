@@ -1,39 +1,15 @@
 console.log("export.js loaded")
-import { 
-    pgs,
-} from './pgs.js'
+import { pgs} from './pgs.js'
+import {plotly,JSZip} from "./dependencies.js";
 
 console.log("export pgs:", pgs)
-// import {math} from '/sdk.js'
-// to inspect all data in the console
-// dataObj=document.getElementById("PGS23calc").PGS23data
 
-// This library was created before transitioning fully to ES6 modules
-// Specifically the pgs library is a dependency satisfied by script tag loading
-if (typeof (pgs) == 'undefined') {
-    let s = document.createElement('script')
-    s.src = 'https://episphere.github.io/diseasome/pgs.js'
-    document.head.appendChild(s)
-}
-if (typeof (JSZip) == 'undefined') {
-    let s = document.createElement('script')
-    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'
-    document.head.appendChild(s)
-}
-if (typeof (Plotly) == 'undefined') {
-    let s = document.createElement('script')
-    s.src = 'https://cdn.plot.ly/plotly-2.18.2.min.js'
-    document.head.appendChild(s)
-}
-
-// pgs is now in the global scope, if it was not there already
-// import * as zip from "https://deno.land/x/zipjs/index.js"
+// This library uses ES6 modules
 
 let PGS23 = {
     // a global variable that is not shared by export
     data: {}
 }
-// in case someone wants to see it in the console
 
 PGS23.loadPGS = async (i=1) => {
    // startng with a default pgs 
@@ -767,7 +743,7 @@ function plotAllMatchByEffect4(data = PGS23.data, errorDiv = document.getElement
     data.plot = obj
     data.plot.traces = traces
 
-    Plotly.newPlot(dv, traces, layout, config)
+    plotly.newPlot(dv, traces, layout, config)
     tabulateAllMatchByEffect()
 }
 
@@ -873,7 +849,7 @@ function pieChart(data = PGS23.data) {
         responsive: true
     }
 
-    Plotly.newPlot('pieChartDiv', piePlotData, layout, config);
+    plotly.newPlot('pieChartDiv', piePlotData, layout, config);
 }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 

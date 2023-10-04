@@ -1,282 +1,14 @@
-import * as sdk from "./sdk.js";
+console.log("pgs.js loaded")
+import {pako, plotly} from "./dependencies.js";
+
 
 
 let pgs = {date:Date()}
-
-async function loadScript(url){
-    let s = document.createElement('script')
-    s.src=url
-    return document.head.appendChild(s)
-}
-
-// async function loadScore(entry='PGS000004',build=37,range){
-//     let txt = ""
-//     if(typeof(entry)=='number'){
-//         entry = entry.toString()
-//         entry = "PGS000000".slice(0,-entry.length)+entry
-//     }
-//     //console.log(entry)
-//     // https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/PGS000004/ScoringFiles/Harmonized/PGS000004_hmPOS_GRCh37.txt.gz
-//     const url = `https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/${entry}/ScoringFiles/Harmonized/${entry}_hmPOS_GRCh${build}.txt.gz`//
- 
-//     if(range){
-//         if(typeof(range)=='number'){
-//             range=[0,range]
-//         }
-//         //debugger
- 
-//         txt= sdk.pako.inflate(await (await fetch(url,{
-//             headers:{
-//                 'content-type': 'multipart/byteranges',
-//                 'range': `bytes=${range.join('-')}`,
-//             }
-//         })).arrayBuffer(),{to:'string'})
-        
-//         //debugger
-//     }else{
-//         txt = sdk.pako.inflate(await (await fetch(url)).arrayBuffer(),{to:'string'})
-
-//     }
-//     // Check if PGS catalog FTP site is down-----------------------
-//        let response
-//        response = await fetch(url) // testing url 'https://httpbin.org/status/429'
-//        if (response?.ok) {
-//            //console.log('Use the response here!');
-//          } else {
-//         txt = `:( Error loading PGS file. HTTP Response Code: ${response?.status}`
-//         document.getElementById('pgsTextArea').value = txt
-//          }
-//    //-------------------------------------------------------
-//     return txt
-// }
-
-
 
 pgs.loadScript=async(url)=>{
     let s = document.createElement('script')
     s.src=url
     return document.head.appendChild(s)
-}
-pgs.piechart =  function(data,div){
-    getInfoSnps(data).then( (value) => {
-    var info = value
-    /* Plot consequence */
-    var consequence = {}
-    info.forEach( el => {
-        var col = el.most_severe_consequence
-        if( ! Object.keys(consequence).includes(col) ){
-            consequence[col]=0
-        }
-        consequence[col]+=1
-    })
-    var y = Object.values(consequence)
-    var x = Object.keys(consequence)
-    var data = [{
-      values: y,
-      labels: x,
-      type: 'pie'
-    }];
-    var layout = {
-      legend: { x: 5 },
-      title: 'Variant Type',
-      height: 400,
-      width: 550
-    };
-    div.innerHTML = ""     
-            return pgs.Plotly.newPlot(div, data, layout);
-    })
-}
-
-let getInfoSnps= async function(data){
-    var dat = data
-    const sleep = ms => new Promise(r => setTimeout(r, ms));
-      var rs = dat.calcRiskScore
-      var i=0
-      var ide=[]
-      rs.forEach( risk => {
-          if(risk>0 || risk<0){
-              ide.push( dat.pgsMatchMy23[i][0][0] )
-          }
-          i+=1
-      })
-      
-      i=0
-      var info=[]
-      while (i<ide.length) {
-          var end = ((i+15)<=ide.length) ? i+15 : ide.length
-          var temp = ide.slice(i, end)
-          info = info.concat( await Promise.all( temp.map( async rsid => {
-              var url = `https://rest.ensembl.org/variation/human/${rsid}?content-type=application/json`
-              var enrich = await (await fetch(url)).json()
-              await sleep(300)
-              return enrich
-          } )) )
-          
-          i+=15
-          if(i>=ide.length){
-              break
-          }
-      }
-      return info
-  }
-
-
-pgs.pgsPlot = function(data,div) {
-    //let div = DOM.element("PGSdiv");
-
-    // display pgs scores as beta or odds ratio with rsids or chr and position on the x axis
-    let oddsRatio = {};
-    const rs_idx = data.cols.indexOf('hm_rsID')
-
-    if (data.dt[0][rs_idx] == '' || data.dt[0][rs_idx] == undefined) {
-        data.dt.forEach((row) => {
-            // show effect sizes of all PGS catalog entry effect sizes (or ORs using exp())
-            //oddsRatio["chr_" + row[8] + "_pos_" + row[9]] = pgs.math.exp(row[4]);
-            oddsRatio["chr_" + row[8] + "_pos_" + row[9]] = row[4];
-
-        })
-    } else {
-        data.dt.forEach((row) => {
-            oddsRatio[row[0]] = pgs.math.exp(row[4]);
-        })
-    }
-    //sort pgs variants by beta
-    let oddsRatioSorted = Object.entries(oddsRatio)
-        .sort(([, a], [, b]) => a - b)
-        .reduce((r, [k, v]) => ({
-            ...r,
-            [k]: v
-        }), {});
-
-    // use plotly to make odds ratio chart----
-    var trace1 = {
-        type: 'scatter',
-        x: Object.values(oddsRatioSorted), // odds ratios
-        y: Object.keys(oddsRatioSorted), // rsids
-        mode: 'markers',
-        name: 'legend1',
-        // height: 500,
-        // width: 400,
-        marker: {
-            color: 'navy',
-            line: {
-                color: 'navy',
-                width: 1,
-            },
-            symbol: 'circle',
-            size: 4
-        }
-    };
-    var dat = [trace1];
-    var layout = {
-        height: 500,
-        width: 400,
-        title: `Odds ratios for ${data.dt.length} PGS variants`,
-        yaxis: {
-            title: `variant rsid/chromosome and position`,
-        },
-        xaxis: {
-            title: ` odds ratios`,
-            showgrid: false,
-            showline: true,
-            linecolor: 'rgb(102, 102, 102)',
-            titlefont: {
-                font: {
-                    size: 10,
-                    color: 'rgb(204, 204, 204)'
-                }
-            },
-            tickfont: {
-                font: {
-                    size: 10,
-                    color: 'rgb(102, 102, 102)'
-                }
-            },
-            autotick: true,
-            dtick: 10,
-            ticks: 'outside',
-            tickcolor: 'rgb(102, 102, 102)'
-        },
-        margin: {
-            l: 190,
-            r: 40,
-            b: 50,
-            t: 80
-        },
-        legend: {
-            font: {
-                size: 10,
-            },
-            yanchor: 'middle',
-            xanchor: 'right'
-        },
-        shapes: [{
-            type: 'line',
-            // mark line at zero for effect size and 1 for OR
-            //x0: 1,
-            x0: 1,
-            y0: 0,
-            x1: 1,
-            y1: Object.values(oddsRatio).length,
-            line: {
-                color: 'navy',
-                width: 1.5,
-                dash: 'dot'
-            }
-        }],
-      
-        hovermode: 'closest', //plot_bgcolor: 'rgb(254, 247, 234)', 
-
-        annotations: [
-            {
-              xref: 'paper',
-              yref: 'paper',
-              x: 0,
-              y: 1.06,
-              xanchor: 'left',
-              yanchor: 'left',
-              text: 'OR > 1 ~ higher odds of the outcome',
-              font:{
-                family: 'Arial',
-                size: 12,
-                color: 'rgb(150,150,150)'
-              },
-              showarrow: false
-            },
-            {
-              xref: 'paper',
-              yref: 'paper',
-              x: 0,
-              y: 1.03,
-              xanchor: 'left',
-              yanchor: 'left',
-              text: 'OR = 1 ~ no association',
-              font:{
-                family: 'Arial',
-                size: 12,
-                color: 'rgb(150,150,150)'
-              },
-              showarrow: false
-            },
-            {
-              xref: 'paper',
-              yref: 'paper',
-              x: 0,
-              y: 0.995,
-              xanchor: 'left',
-              yanchor: 'left',
-              text: 'OR < 1 ~ lower odds of the outcome',
-              font:{
-                family: 'Arial',
-                size: 12,
-                color: 'rgb(150,150,150)'
-              },
-              showarrow: false
-            }
-          ]
-    };
-    pgs.Plotly.newPlot(div, dat, layout)
-  return div
 }
 
 pgs.plotAllMatchByPos=(data,div2)=>{ 
@@ -313,7 +45,7 @@ pgs.plotAllMatchByPos=(data,div2)=>{
     }
       div2.innerHTML = ""
     //setTimeout(_=>{
-    pgs.Plotly.newPlot(div2, [trace0], {
+    plotly.newPlot(div2, [trace0], {
         //title:`${data.pgs.meta.trait_mapped}, PRS ${Math.round(data.PRS*1000)/1000}`
         title: `<i style="color:navy">  risk scores for ${data.calcRiskScore.length} ${data.pgs.meta.trait_reported}, PRS ${Math.round(data.PRS*1000)/1000}</i>
 			  <br><a href="${'https://doi.org/' + data.pgs.meta.citation.match(/doi\:.*$/)[0]}" target="_blank"style="font-size:x-small">${data.pgs.meta.citation}</a>`,
@@ -452,7 +184,7 @@ pgs.loadScore=async(entry='PGS000004',build=37,range)=>{
         }
         //debugger
  
-        txt= sdk.pako.inflate(await (await fetch(url,{
+        txt= pako.inflate(await (await fetch(url,{
             headers:{
                 'content-type': 'multipart/byteranges',
                 'range': `bytes=${range.join('-')}`,
@@ -461,7 +193,7 @@ pgs.loadScore=async(entry='PGS000004',build=37,range)=>{
         
         //debugger
     }else{
-        txt = sdk.pako.inflate(await (await fetch(url)).arrayBuffer(),{to:'string'})
+        txt = pako.inflate(await (await fetch(url)).arrayBuffer(),{to:'string'})
 
     }
     // Check if PGS catalog FTP site is down-----------------------
@@ -583,26 +315,6 @@ pgs.getValues=async(id='PGS000004')=>{ // getting values of a PSG entry by parsi
 pgs.score={}
 //pgs.score.all=async fetch(url='https://www.pgscatalog.org/rest/score/all')
 
-
-pgs.loadDependencies=function(){
-//     pgs.loadScript("https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.11/pako.min.js").then(s=>{
-//         s.onload=function(){
-//             pgs.pako=pako
-//         }
-//     })
-    pgs.loadScript("https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js").then(s=>{
-        s.onload=function(){
-            pgs.localforage=localforage
-        }
-    })
-    pgs.loadScript("https://cdn.plot.ly/plotly-2.18.2.min.js").then(s=>{
-        s.onload=function(){
-            pgs.Plotly=Plotly
-        }
-    })
-    // https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js  
-}
-
 pgs.deblank=(txt)=>{
     return txt.replace(/^[#\s]+/,'').replace(/\s+?/,'')
 }
@@ -685,10 +397,6 @@ pgs.getRsid = async(x = 'chr1:g.100880328A>T?fields=dbsnp.rsid')=>{
     //https://myvariant.info/v1/variant/
 }
 
-pgs.dtFrame2Array=(fields,values)=>{
-    // under development
-}
-
 pgs.ini=()=>{ // act on context, such as search parameters. Not called automatically here.
     pgs.parms={}
     if(location.search.length>3){
@@ -704,26 +412,9 @@ pgs.ini=()=>{ // act on context, such as search parameters. Not called automatic
     }
 }
 
-if(typeof(define)!="undefined"){
-    //define(pgs)
-    define(['https://cdn.plot.ly/plotly-2.18.2.min.js',
-    // 'https://cdnjs.cloudflare.com/ajax/libs/mathjs/1.5.2/math.min.js',
-     'https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.3/pako.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/localforage/1.9.0/localforage.min.js'],function(Plotly,localforage){
-        pgs.Plotly = Plotly
-        pgs.math = math
-        //pgs.pako = pako
-        pgs.localforage=localforage
-        return pgs
-    })
-}else{
-    pgs.loadDependencies()
-}
+
 
 export{
     pgs,
-    sdk,
-    loadScript,
-   // loadScore
 }
 
