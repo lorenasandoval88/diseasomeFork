@@ -6,7 +6,7 @@ import {
 } from './main.js'
 
 import { 
-    plotAllMatchByEffect4
+    plot
 } from '../plot.js' 
 
 import { 
@@ -33,7 +33,7 @@ export{
     PGS23,
     parsePGS,
     parse23,
-    plotAllMatchByEffect4,
+    plot,
     plotly,
     ui
 }

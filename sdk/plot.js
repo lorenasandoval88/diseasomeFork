@@ -342,4 +342,4 @@ plot.tabulateAllMatchByEffect = async function(data = PGS23.data, div = document
 }
 
 
-export{ plotAllMatchByEffect4}
+export{ plot}
