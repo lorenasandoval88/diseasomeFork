@@ -72,7 +72,7 @@ async function traitTotals() {
     return traitTotals.sort((a,b) => a.count - b.count)
   } 
 
-
+console.log("traitTotals()",traitTotals())
 
 plot.pgsCounts = async function(){
     let div = document.getElementById("pgsBar")
