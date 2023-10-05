@@ -5,6 +5,7 @@ import {PGS23} from "../main.js";
 let plot = {
 }
 let scoringFiles = fetchAll2('https://www.pgscatalog.org/rest/score/all')
+
 async function fetchAll2(url, maxPolls = null) {
     const allResults = []
   
@@ -97,7 +98,7 @@ plot.pgsCounts = async function(){
         ]
           
         //   const myDiv = DOM.element("div");
-          Plotly.newPlot(div, data, layout);
+          plotly.newPlot(div, data, layout);
           //return myDiv
         
 }
