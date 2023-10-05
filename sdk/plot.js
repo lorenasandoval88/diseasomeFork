@@ -23,7 +23,7 @@ async function fetchAll2(url, maxPolls = null) {
     }
     return allResults
   }
-  getPgsFiles = function(trait){
+  async function getPgsFiles(trait){
     let traitFilesArr = []
    let assocPgsIdsArr = []
    // get trait files that match selected trait from drop down
