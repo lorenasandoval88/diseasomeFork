@@ -4,6 +4,35 @@ import {PGS23} from "../main.js";
 
 let plot = {}
 
+plot.pgsCounts = async function(){
+    let div = document.getElementById("pgsBar")
+    
+        var layout = {
+            title: 'Counts of PGS Catalog Scoring Files by Trait',
+            margin: {
+            l: 250,
+            r: 20,
+           // t: 100,
+            b: 70
+          }
+        }
+        var data = 
+        [
+             {
+            x: traitTotals.map(x=>x.count),
+            y: traitTotals.map(x=>x.trait),
+            type: 'bar',
+            orientation: 'h'
+          }
+        ]
+          
+        //   const myDiv = DOM.element("div");
+          Plotly.newPlot(div, data, layout);
+          //return myDiv
+        
+}
+//plot.pgsCounts()
+
 plot.plotAllMatchByEffect4  = async function(data, errorDiv ,dv) {
     //https://community.plotly.com/t/fill-shade-a-chart-above-a-specific-y-value-in-plotlyjs/5133
 

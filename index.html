@@ -61,21 +61,30 @@
 
     <!-- side panel -->
 
-
-
     <!-- main banner -->
     <section class="bgimage" id="home">
         <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hero-text">
-                    <h2 class="hero_title">Diseasome</h2>
-                    <p class="hero_desc">Calculation of multiple <br> (<a
-                            href="https://www.nature.com/articles/nrg.2016.27" target="_blank">risk profiles</a>) for
-                        23andme
-                        reports, using the <a href='https://www.pgscatalog.org' target="_blank">PGS Catalog</a>.</p>
-                </div>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hero-text">
+                <h2 class="hero_title">Diseasome</h2>
+                <p class="hero_desc">Calculation of multiple <br> (<a href="https://www.nature.com/articles/nrg.2016.27"
+                        target="_blank">risk profiles</a>) for
+                    23andme
+                    reports, using the <a href='https://www.pgscatalog.org' target="_blank">PGS Catalog</a>.</p>
             </div>
         </div>
+
+    </section>
+    
+    <section id = "pgsCounts" class="p-3 mb-2 bg-light text-dark" id="home2">
+        <div id = "pgsBar" class="container-fluid">
+
+            <div class="col">
+                <!-- DESCRIPTION -->
+                <span style="font-size:large;">Counts of PGS Catalog Scoring Files by Trait:</span><br><br>
+
+            </div>
+        </div>
+
     </section>
 
     <!-- calc section-->
@@ -93,10 +102,10 @@
         </div>
     </section>
 
-    <script  type="module" src="sdk/plot.js"></script>
-    <script  type="module" src="main.js"></script>
-    <script  type="module" src="dependencies.js"></script>
-    <script  type="module" src="pgs.js"></script>
+    <script type="module" src="sdk/plot.js"></script>
+    <script type="module" src="main.js"></script>
+    <script type="module" src="dependencies.js"></script>
+    <script type="module" src="pgs.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js"></script>
 
 

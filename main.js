@@ -60,7 +60,7 @@ PGS23.loadPGS = async (i=1) => {
             }
             div.querySelector('#checkLargeFile').checked = false
             div.querySelector('#showLargeFile').hidden = true
-            PGS23.pgsObj = await parse23(i)
+            PGS23.pgsObj = await parsePGS(i)
             div.querySelector('#pubDOI').href = 'https://doi.org/' + PGS23.pgsObj.meta.citation.match(/doi\:.*$/)[0]
             div.querySelector('#trait_mapped').innerHTML = `<span style="color:maroon">${PGS23.pgsObj.meta.trait_mapped}</span>`
             div.querySelector('#dataRows').innerHTML = PGS23.pgsObj.dt.length
@@ -369,8 +369,26 @@ function ui() {
     PGS23.load23()
     PGS23.loadCalc()
 }
+function parse23(txt, info) {
+    // normally info is the file name
+    let obj = {}
+    let rows = txt.split(/[\r\n]+/g)
+    let n = rows.filter(r => (r[0] == '#')).length
+    obj.meta = rows.slice(0, n - 1).join('\r\n')
+    obj.cols = rows[n - 1].slice(2).split(/\t/)
+    obj.dt = rows.slice(n)
+    obj.dt = obj.dt.map((r, i) => {
+        r = r.split('\t')
+        r[2] = parseInt(r[2])
+        // position in the chr
+        r[4] = i
+        return r
+    })
+    obj.info = info
+    return obj
+}
 
- async function parse23(i = 1) {
+async function parsePGS(i = 1) {
     let obj = {
         id: i
     }
@@ -412,6 +430,7 @@ function ui() {
     })
     return obj
 }
+
 
 
 
