@@ -4,9 +4,46 @@ import {PGS23} from "../main.js";
 
 let plot = {}
 
+async function fetchAll2(url, maxPolls = null) {
+    const allResults = []
+  
+    if (maxPolls == null) maxPolls = Infinity
+    
+    for (let i = 0; i < maxPolls; i++) {
+      const offset = i * 100
+      let queryUrl = `${url}?limit=100&offset=${offset}`
+      
+      const results = (await (await fetch(queryUrl)).json()).results
+      results.forEach(result => allResults.push(result))
+      
+      if (results.length < 100) {
+        break 
+      }
+    }
+    return allResults
+  }
+
+async function traitTotals() {
+    let traitFiles = fetchAll2('https://www.pgscatalog.org/rest/trait/all')
+    let traitTotals = []
+    let allTraits = Array.from(new Set( traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e =>   
+                       e.length).map(JSON.stringify)), JSON.parse)
+    let allScores = traits.map( x => getPgsFiles(x)) 
+    
+    allTraits.map(( x, i)=> {
+      let counts = {}
+      counts["trait"]= x
+      counts["count"]= allScores[i].length
+      traitTotals.push(counts)
+    })
+    return traitTotals.sort((a,b) => a.count - b.count)
+  } 
+
+
+
 plot.pgsCounts = async function(){
     let div = document.getElementById("pgsBar")
-    
+        data = traitTotals()
         var layout = {
             title: 'Counts of PGS Catalog Scoring Files by Trait',
             margin: {
@@ -19,8 +56,8 @@ plot.pgsCounts = async function(){
         var data = 
         [
              {
-            x: traitTotals.map(x=>x.count),
-            y: traitTotals.map(x=>x.trait),
+            x: data.map(x=>x.count),
+            y: data.map(x=>x.trait),
             type: 'bar',
             orientation: 'h'
           }
@@ -31,7 +68,7 @@ plot.pgsCounts = async function(){
           //return myDiv
         
 }
-//plot.pgsCounts()
+plot.pgsCounts()
 
 plot.plotAllMatchByEffect4  = async function(data, errorDiv ,dv) {
     //https://community.plotly.com/t/fill-shade-a-chart-above-a-specific-y-value-in-plotlyjs/5133
