@@ -341,5 +341,62 @@ async function tabulateAllMatchByEffect(data , div ) {
     })
 }
 
+/* Plot percent of matched and not matched betas */
+plot.pieChart  = async function(data = PGS23.data) {
+    pieChartDiv.style.height = 19 + 'em'
 
+    /* Plot percent of matched and not matched betas */
+    const risk_composition = {}
+    const risk1 = data.plot.matched.risk.reduce((partialSum, a) => partialSum + a, 0);
+    const risk2 = data.plot.not_matched.risk.reduce((partialSum, a) => partialSum + a, 0);
+    risk_composition[`total β for ${data.plot.matched.risk.length} <br>matched variants`] = risk1
+    risk_composition[`total β for ${data.plot.not_matched.risk.length} <br>unmatched variants`] = risk2
+    var y = Object.values(risk_composition)
+    var x = Object.keys(risk_composition)
+    var piePlotData = [{
+        values: y,
+        labels: x,
+        //showlegend: false,
+        insidetextorientation: "horizontal",
+        //automargin : "true",
+        textinfo: "percent",
+        textposition: "inside",
+        type: 'pie',
+        //automargin: true,
+        marker: {
+            colors: ["#2ca02c", "grey"],
+            size: 19,
+            line: {color: 'black' }
+        },
+        textfont: {
+            color: 'black',
+            size: 19
+        },
+
+        hoverlabel: {
+            bgcolor: 'black',
+            bordercolor: 'black',
+            font: {
+                color: 'white',
+                size: 18
+            }
+        }
+    }]
+    var layout = {
+        title: {
+        text:` PGS#${data.pgs.meta.pgs_id.replace(/^.*0+/,'')}: total β contribution for ${data.pgsMatchMy23.length} matched <br>and ${data.pgs.dt.length-data.pgsMatchMy23.length} unmatched variants`,
+        font: {size: 19}
+     },
+        width:'20em',
+        legend: {
+           xanchor:"right",
+            font: { size: 16 }
+        },
+    };
+    var config = {
+        responsive: true
+    }
+
+    plotly.newPlot('pieChartDiv', piePlotData, layout, config);
+}
 export{ plot}

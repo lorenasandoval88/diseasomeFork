@@ -7,7 +7,7 @@ import { plot} from './sdk/plot.js'
 // This library uses ES6 modules
 
 let PGS23 = {
-    // a global variable that is not shared by export
+    // a global variable that is not shared by main.js
     data: {}
 }
 
@@ -62,7 +62,7 @@ PGS23.loadPGS = async (i=1) => {
             }
             div.querySelector('#checkLargeFile').checked = false
             div.querySelector('#showLargeFile').hidden = true
-            PGS23.pgsObj = await parsePGS(i)
+            PGS23.pgsObj = await PGS23.parsePGS(i)
             div.querySelector('#pubDOI').href = 'https://doi.org/' + PGS23.pgsObj.meta.citation.match(/doi\:.*$/)[0]
             div.querySelector('#trait_mapped').innerHTML = `<span style="color:maroon">${PGS23.pgsObj.meta.trait_mapped}</span>`
             div.querySelector('#dataRows').innerHTML = PGS23.pgsObj.dt.length
@@ -82,7 +82,7 @@ PGS23.loadPGS = async (i=1) => {
         let cleanObj = structuredClone(PGS23.pgsObj)
         cleanObj.info = cleanObj.txt.match(/^[^\n]*/)[0]
         delete cleanObj.txt
-        saveFile(JSON.stringify(cleanObj), cleanObj.meta.pgs_id + '.json')
+        PGS23.saveFile(JSON.stringify(cleanObj), cleanObj.meta.pgs_id + '.json')
     }
 }
 //------------------------------------------------
@@ -103,7 +103,7 @@ PGS23.load23 = async () => {
             div.querySelector("#my23Info").innerText = my23.info
             div.querySelector("#my23variants").innerText = my23.dt.length
             div.querySelector("#json23").onclick = _ => {
-                saveFile(JSON.stringify(my23), my23.info.replace(/\.[^\.]+$/, '') + '.json')
+                PGS23.saveFile(JSON.stringify(my23), my23.info.replace(/\.[^\.]+$/, '') + '.json')
             }
             PGS23.data.my23 = my23
         }
@@ -128,7 +128,7 @@ PGS23.load23 = async () => {
             }
             if(build37.length > 0){
                 div.querySelector("#my23TextArea").value = txt.slice(0, 10000).replace(/[^\r\n]+$/, '') + '\n\n .................. \n\n' + txt.slice(-300).replace(/^[^\r\n]+/, '')
-                UI23(parse23(txt, evt.target.files[0].name))
+                UI23(PGS23.parse23(txt, evt.target.files[0].name))
             }else{
                 div.querySelector("#my23TextArea").value = `ERROR: please load 23andMe file with reference build 37 \nFrom file: "${otherBuild}"`
             }
@@ -140,7 +140,7 @@ PGS23.load23 = async () => {
                 let fnametxt = Object.getOwnPropertyNames(zip.files)[0]
                 zip.file(fnametxt).async('string').then(txt => {
                     div.querySelector("#my23TextArea").value = txt.slice(0, 10000).replace(/[^\r\n]+$/, '') + '\n\n .................. \n\n' + txt.slice(-300).replace(/^[^\r\n]+/, '')
-                    UI23(parse23(txt, evt.target.files[0].name))
+                    UI23(PGS23.parse23(txt, evt.target.files[0].name))
                 })
             })
         }
@@ -179,12 +179,12 @@ PGS23.loadCalc = async () => {
     div.querySelector('#matchesJSON').onclick = evt => {
 
         let data = document.getElementById("PGS23calc").PGS23data
-        saveFile(JSON.stringify(data.pgsMatchMy23), data.my23.info.slice(0, -4) + '_match_PGS_calcRiskScore' + data.pgs.id + '.json')
+        PGS23.saveFile(JSON.stringify(data.pgsMatchMy23), data.my23.info.slice(0, -4) + '_match_PGS_calcRiskScore' + data.pgs.id + '.json')
 
     }
     div.querySelector('#riskCalcScoreJSON').onclick = evt => {
         let data = document.getElementById("PGS23calc").PGS23data
-        saveFile(JSON.stringify(data.calcRiskScore), data.my23.info.slice(0, -4) + '_individual_RiskScores' + data.pgs.id + '.json')
+        PGS23.saveFile(JSON.stringify(data.calcRiskScore), data.my23.info.slice(0, -4) + '_individual_RiskScores' + data.pgs.id + '.json')
 
     }
     div.querySelector('#buttonCalculateRisk').onclick = evt => {
@@ -308,7 +308,7 @@ PGS23.Match2 = function (data, progressReport) {
                 document.getElementById('plotRiskDiv').hidden = true
                 document.getElementById('hidenCalc').hidden = false
                 plot.plotAllMatchByEffect4(data = PGS23.data,  document.getElementById('errorDiv'),document.getElementById('plotAllMatchByEffectDiv') )          
-                pieChart()
+                plot.pieChart(PGS23.data)
             // large betas over 100
            // }else if (calcRiskScore.reduce((a, b) => Math.max(a, b)) > 100) { //&&(calcRiskScore.reduce((a,b)=>Math.max(a,b))<=1)){ // hazard ratios?
                 console.log('these are large betas :-(',weights)
@@ -318,7 +318,7 @@ PGS23.Match2 = function (data, progressReport) {
                 document.getElementById('hidenCalc').hidden = false
                 data.PRS = Math.exp(calcRiskScore.reduce((a, b) => a + b))
                 plot.plotAllMatchByEffect4(data = PGS23.data, document.getElementById('errorDiv'), document.getElementById('plotAllMatchByEffectDiv') )          
-                pieChart()
+                plot.pieChart(PGS23.data)
             } else {
                 data.PRS = Math.exp(calcRiskScore.reduce((a, b) => a + b))
                 document.getElementById('my23CalcTextArea').value += ` Polygenic Risk Score, PRS=${Math.round(data.PRS * 1000) / 1000}, calculated from ${data.pgsMatchMy23.length} PGS matches to the 23andme report.`
@@ -327,7 +327,7 @@ PGS23.Match2 = function (data, progressReport) {
                 document.getElementById('hidenCalc').hidden = false
                 //ploting
                 plot.plotAllMatchByEffect4(data = PGS23.data,document.getElementById('errorDiv'), document.getElementById('plotAllMatchByEffectDiv') )          
-                pieChart()
+                plot.pieChart(PGS23.data)
             }
             document.querySelector('#buttonCalculateRisk').disabled = false
             document.querySelector('#buttonCalculateRisk').style.color = 'blue'
@@ -372,7 +372,7 @@ function ui() {
     PGS23.loadCalc()
 }
 
-async function parsePGS(i = 1) {
+PGS23.parsePGS = function (i = 1) {
     let obj = {
         id: i
     }
@@ -415,7 +415,7 @@ async function parsePGS(i = 1) {
     return obj
 }
 
-function parse23(txt, info) {
+PGS23.parse23 = function (txt, info) {
     // normally info is the file name
     let obj = {}
     let rows = txt.split(/[\r\n]+/g)
@@ -453,68 +453,9 @@ PGS23.saveFile = async function (x, fileName) {
     return a
 }
 
-/* Plot percent of matched and not matched betas */
-function pieChart(data = PGS23.data) {
-    pieChartDiv.style.height = 19 + 'em'
 
-    /* Plot percent of matched and not matched betas */
-    const risk_composition = {}
-    const risk1 = data.plot.matched.risk.reduce((partialSum, a) => partialSum + a, 0);
-    const risk2 = data.plot.not_matched.risk.reduce((partialSum, a) => partialSum + a, 0);
-    risk_composition[`total β for ${data.plot.matched.risk.length} <br>matched variants`] = risk1
-    risk_composition[`total β for ${data.plot.not_matched.risk.length} <br>unmatched variants`] = risk2
-    var y = Object.values(risk_composition)
-    var x = Object.keys(risk_composition)
-    var piePlotData = [{
-        values: y,
-        labels: x,
-        //showlegend: false,
-        insidetextorientation: "horizontal",
-        //automargin : "true",
-        textinfo: "percent",
-        textposition: "inside",
-        type: 'pie',
-        //automargin: true,
-        marker: {
-            colors: ["#2ca02c", "grey"],
-            size: 19,
-            line: {color: 'black' }
-        },
-        textfont: {
-            color: 'black',
-            size: 19
-        },
-
-        hoverlabel: {
-            bgcolor: 'black',
-            bordercolor: 'black',
-            font: {
-                color: 'white',
-                size: 18
-            }
-        }
-    }]
-    var layout = {
-        title: {
-        text:` PGS#${data.pgs.meta.pgs_id.replace(/^.*0+/,'')}: total β contribution for ${data.pgsMatchMy23.length} matched <br>and ${data.pgs.dt.length-data.pgsMatchMy23.length} unmatched variants`,
-        font: {size: 19}
-     },
-        width:'20em',
-        legend: {
-           xanchor:"right",
-            font: { size: 16 }
-        },
-    };
-    var config = {
-        responsive: true
-    }
-
-    plotly.newPlot('pieChartDiv', piePlotData, layout, config);
-}
 
 export {
     ui,
-    PGS23,
-    parsePGS,
-    parse23,
+    PGS23
 }

@@ -14,8 +14,6 @@ localforage.config({
     name: 'localforage'
 });
 
-
-
 let endpointStore = localforage.createInstance({
     name: dbName,
     storeName: "endpointStore"

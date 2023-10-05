@@ -17,7 +17,6 @@ import {
 import { 
 clearCache,
 endpointStore,
-// math,
 pako,
 plotly,
 localforage,
@@ -27,7 +26,6 @@ export{
     pgs,
     clearCache,
     endpointStore,
-    // math,
     pako,
     localforage,
     PGS23,
