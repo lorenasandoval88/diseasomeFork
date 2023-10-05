@@ -3,9 +3,8 @@ import {PGS23} from "../main.js";
 
 
 let plot = {
-    data:{}
 }
-
+let scoringFiles = fetchAll2('https://www.pgscatalog.org/rest/score/all')
 async function fetchAll2(url, maxPolls = null) {
     const allResults = []
   
@@ -24,6 +23,34 @@ async function fetchAll2(url, maxPolls = null) {
     }
     return allResults
   }
+  getPgsFiles = function(trait){
+    let traitFilesArr = []
+   let assocPgsIdsArr = []
+   // get trait files that match selected trait from drop down
+   traitFiles.filter(tfile => {
+             if(trait.includes(tfile["trait_categories"][0])){
+                 traitFilesArr.push(tfile )
+                 }
+               })
+   
+ // get pgs scoring files if trait data found, unless type "associated_pgs_ids"
+ if ( traitFilesArr[0]['trait_categories'] != undefined){
+      var pgsIds = traitFilesArr.flatMap( x => x.associated_pgs_ids).sort().filter((v,i) => traitFilesArr.flatMap( x =>    x.associated_pgs_ids).sort().indexOf(v) == i)
+       assocPgsIdsArr = scoringFiles.filter(x => pgsIds.includes(x.id)) // 
+     } 
+ // filter results by number of SNPs 
+ var assocPgsIdsArrSubset =  assocPgsIdsArr.filter(function (el) {
+       return el.variants_number <= pgsVariantsNumber
+     });
+ 
+   let data = assocPgsIdsArrSubset.map( o => 
+ preferredOrder(o,[ "id","trait_efo", "variants_number","weight_type", "trait_reported",  "name", "publication", "matches_publication", "samples_variants", "samples_training", "trait_additional", "method_name", "method_params",  "variants_interactions", "variants_genomebuild", "ancestry_distribution", "date_release", "ftp_harmonized_scoring_files","ftp_scoring_file", "license"]))
+   //   if (data.length == 0){
+   //   data.push({"id":`no pgs files with less than ${pgsVariantsNumber} SNPs`})
+   //   return data
+   // }
+   return data
+ }
 
 async function traitTotals() {
     let traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
@@ -47,7 +74,7 @@ async function traitTotals() {
 
 plot.pgsCounts = async function(){
     let div = document.getElementById("pgsBar")
-        plotdata = traitTotals()
+        plot.data = traitTotals()
         var layout = {
             title: 'Counts of PGS Catalog Scoring Files by Trait',
             margin: {
