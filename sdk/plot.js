@@ -27,6 +27,8 @@ async function fetchAll2(url, maxPolls = null) {
     let traitFilesArr = []
    let assocPgsIdsArr = []
    // get trait files that match selected trait from drop down
+   let traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
+
    traitFiles.filter(tfile => {
              if(trait.includes(tfile["trait_categories"][0])){
                  traitFilesArr.push(tfile )
