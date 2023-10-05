@@ -2,7 +2,9 @@ import {plotly} from "../dependencies.js";
 import {PGS23} from "../main.js"; 
 
 
-let plot = {}
+let plot = {
+    data:{}
+}
 
 async function fetchAll2(url, maxPolls = null) {
     const allResults = []
@@ -25,7 +27,8 @@ async function fetchAll2(url, maxPolls = null) {
 
 async function traitTotals() {
     let traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
-    console.log("traitFiles", await traitFiles)
+    let traits = Array.from(new Set( traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
+    console.log("traitFiles2", traitFiles)
     let traitTotals = []
     let allTraits = Array.from(new Set( traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e =>   
                        e.length).map(JSON.stringify)), JSON.parse)
@@ -44,7 +47,7 @@ async function traitTotals() {
 
 plot.pgsCounts = async function(){
     let div = document.getElementById("pgsBar")
-        data = traitTotals()
+        plotdata = traitTotals()
         var layout = {
             title: 'Counts of PGS Catalog Scoring Files by Trait',
             margin: {
