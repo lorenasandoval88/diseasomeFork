@@ -86,11 +86,11 @@ plot.pgsCounts = async function(){
             b: 70
           }
         }
-        var data = 
+        var dt = 
         [
              {
-            x: data.map(x=>x.count),
-            y: data.map(x=>x.trait),
+            x: plot.data.map(x=>x.count),
+            y: plot.data.map(x=>x.trait),
             type: 'bar',
             orientation: 'h'
           }
