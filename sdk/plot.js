@@ -498,4 +498,7 @@ plot.pieChart  = async function(data = PGS23.data) {
 
     plotly.newPlot('pieChartDiv', piePlotData, layout, config);
 }
+
+
+console.log("plot",plot)
 export{ plot}
