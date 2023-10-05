@@ -1,6 +1,6 @@
 console.log("main.js loaded")
 import { pgs} from './pgs.js'
-import {plotly,JSZip} from "./dependencies.js";
+import {JSZip} from "./dependencies.js";
 import { plot} from './sdk/plot.js'
 
 
@@ -62,7 +62,7 @@ PGS23.loadPGS = async (i=1) => {
             }
             div.querySelector('#checkLargeFile').checked = false
             div.querySelector('#showLargeFile').hidden = true
-            PGS23.pgsObj = await PGS23.parsePGS(i)
+            PGS23.pgsObj = await parse23(i)
             div.querySelector('#pubDOI').href = 'https://doi.org/' + PGS23.pgsObj.meta.citation.match(/doi\:.*$/)[0]
             div.querySelector('#trait_mapped').innerHTML = `<span style="color:maroon">${PGS23.pgsObj.meta.trait_mapped}</span>`
             div.querySelector('#dataRows').innerHTML = PGS23.pgsObj.dt.length
@@ -85,7 +85,7 @@ PGS23.loadPGS = async (i=1) => {
         PGS23.saveFile(JSON.stringify(cleanObj), cleanObj.meta.pgs_id + '.json')
     }
 }
-//------------------------------------------------
+
 PGS23.load23 = async () => {
     let div = PGS23.div23
     div.innerHTML =
@@ -372,7 +372,7 @@ function ui() {
     PGS23.loadCalc()
 }
 
-PGS23.parsePGS = function (i = 1) {
+parse23 = function (i = 1) {
     let obj = {
         id: i
     }
@@ -453,6 +453,7 @@ PGS23.saveFile = async function (x, fileName) {
     return a
 }
 
+console.log("pgs",pgs)
 
 
 export {
