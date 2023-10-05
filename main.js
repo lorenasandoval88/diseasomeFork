@@ -10,7 +10,7 @@ let PGS23 = {
     // a global variable that is not shared by main.js
     data: {}
 }
-
+console.log("pgs",pgs.loadScore())
 PGS23.loadPGS = async (i=1) => {
    // startng with a default pgs 
    let div = PGS23.divPGS
@@ -372,7 +372,7 @@ function ui() {
     PGS23.loadCalc()
 }
 
-parse23 = function (i = 1) {
+ async function parse23(i = 1) {
     let obj = {
         id: i
     }
@@ -453,7 +453,7 @@ PGS23.saveFile = async function (x, fileName) {
     return a
 }
 
-console.log("pgs",pgs)
+
 
 
 export {
