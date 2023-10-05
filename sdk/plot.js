@@ -24,7 +24,7 @@ async function fetchAll2(url, maxPolls = null) {
   }
 
 async function traitTotals() {
-    let traitFiles = fetchAll2('https://www.pgscatalog.org/rest/trait/all')
+    let traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
     console.log("traitFiles", traitFiles)
     let traitTotals = []
     let allTraits = Array.from(new Set( traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e =>   
