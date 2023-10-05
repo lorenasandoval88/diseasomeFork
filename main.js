@@ -3,14 +3,12 @@ import { pgs} from './pgs.js'
 import {JSZip} from "./dependencies.js";
 import { plot} from './sdk/plot.js'
 
-
 // This library uses ES6 modules
 
 let PGS23 = {
     // a global variable that is not shared by main.js
     data: {}
 }
-console.log("pgs",pgs.loadScore())
 PGS23.loadPGS = async (i=1) => {
    // startng with a default pgs 
    let div = PGS23.divPGS
@@ -128,7 +126,7 @@ PGS23.load23 = async () => {
             }
             if(build37.length > 0){
                 div.querySelector("#my23TextArea").value = txt.slice(0, 10000).replace(/[^\r\n]+$/, '') + '\n\n .................. \n\n' + txt.slice(-300).replace(/^[^\r\n]+/, '')
-                UI23(PGS23.parse23(txt, evt.target.files[0].name))
+                UI23(parse23(txt, evt.target.files[0].name))
             }else{
                 div.querySelector("#my23TextArea").value = `ERROR: please load 23andMe file with reference build 37 \nFrom file: "${otherBuild}"`
             }
@@ -140,7 +138,7 @@ PGS23.load23 = async () => {
                 let fnametxt = Object.getOwnPropertyNames(zip.files)[0]
                 zip.file(fnametxt).async('string').then(txt => {
                     div.querySelector("#my23TextArea").value = txt.slice(0, 10000).replace(/[^\r\n]+$/, '') + '\n\n .................. \n\n' + txt.slice(-300).replace(/^[^\r\n]+/, '')
-                    UI23(PGS23.parse23(txt, evt.target.files[0].name))
+                    UI23(parse23(txt, evt.target.files[0].name))
                 })
             })
         }
@@ -415,24 +413,7 @@ function ui() {
     return obj
 }
 
-PGS23.parse23 = function (txt, info) {
-    // normally info is the file name
-    let obj = {}
-    let rows = txt.split(/[\r\n]+/g)
-    let n = rows.filter(r => (r[0] == '#')).length
-    obj.meta = rows.slice(0, n - 1).join('\r\n')
-    obj.cols = rows[n - 1].slice(2).split(/\t/)
-    obj.dt = rows.slice(n)
-    obj.dt = obj.dt.map((r, i) => {
-        r = r.split('\t')
-        r[2] = parseInt(r[2])
-        // position in the chr
-        r[4] = i
-        return r
-    })
-    obj.info = info
-    return obj
-}
+
 
 PGS23.saveFile = async function (x, fileName) {
     // x is the content of the file

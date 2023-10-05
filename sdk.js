@@ -1,7 +1,5 @@
 import { 
     PGS23,
-    parsePGS,
-    parse23,
     ui
 } from './main.js'
 
@@ -10,7 +8,7 @@ import {
 } from './sdk/plot.js' 
 
 import { 
-    pgs,
+    pgs
 } from './pgs.js'
 
 
@@ -29,8 +27,6 @@ export{
     pako,
     localforage,
     PGS23,
-    parsePGS,
-    parse23,
     plot,
     plotly,
     ui
