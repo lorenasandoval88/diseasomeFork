@@ -77,7 +77,7 @@ console.log("traitTotals()",traitTotals())
 
 plot.pgsCounts = async function(){
     let div = document.getElementById("pgsBar")
-        data = traitTotals()
+        data = await traitTotals()
         var layout = {
             title: 'Counts of PGS Catalog Scoring Files by Trait',
             margin: {
