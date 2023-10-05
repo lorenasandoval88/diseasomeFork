@@ -4,7 +4,6 @@ import {PGS23} from "../main.js";
 
 let plot = {
 }
-let scoringFiles = fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')
 
 async function fetchAll2(url, maxPolls = null) {
     const allResults = []
@@ -29,6 +28,10 @@ async function fetchAll2(url, maxPolls = null) {
    let assocPgsIdsArr = []
    // get trait files that match selected trait from drop down
    let traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
+   let scoringFiles = fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')
+
+   console.log("traitFiles",traitFiles)
+   console.log("scoringFiles",scoringFiles)
 
    traitFiles.filter(tfile => {
              if(trait.includes(tfile["trait_categories"][0])){
