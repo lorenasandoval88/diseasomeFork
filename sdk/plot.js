@@ -76,7 +76,7 @@ async function traitTotals() {
 
 plot.pgsCounts = async function(){
     let div = document.getElementById("pgsBar")
-        plot.data = traitTotals()
+        data = traitTotals()
         var layout = {
             title: 'Counts of PGS Catalog Scoring Files by Trait',
             margin: {
@@ -89,8 +89,8 @@ plot.pgsCounts = async function(){
         var dt = 
         [
              {
-            x: plot.data.map(x=>x.count),
-            y: plot.data.map(x=>x.trait),
+            x: data.map(x=>x.count),
+            y: data.map(x=>x.trait),
             type: 'bar',
             orientation: 'h'
           }
