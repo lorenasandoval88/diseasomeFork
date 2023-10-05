@@ -4,7 +4,7 @@ import {PGS23} from "../main.js";
 
 let plot = {
 }
-let scoringFiles = fetchAll2('https://www.pgscatalog.org/rest/score/all')
+let scoringFiles = fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')
 
 async function fetchAll2(url, maxPolls = null) {
     const allResults = []
