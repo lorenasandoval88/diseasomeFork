@@ -5,8 +5,8 @@ import {PGS23} from "../main.js";
 let plot = {
 }
 
-let traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
-let scoringFiles = await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')
+traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
+scoringFiles = await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')
 console.log("traitFiles",traitFiles)
 console.log("scoringFiles",scoringFiles)
 
@@ -28,6 +28,19 @@ async function fetchAll2(url, maxPolls = null) {
     }
     return allResults
   }
+
+async function preferredOrder(obj, order) {
+    var newObject = {};
+    for(var i = 0; i < order.length; i++) {
+        if(obj.hasOwnProperty(order[i])) {
+            newObject[order[i]] = obj[order[i]];
+          //console.log(obj[order[i]])
+        }
+    }
+    return newObject;
+}
+
+
   async function getPgsFiles(trait){
     let traitFilesArr = []
    let assocPgsIdsArr = []
@@ -60,7 +73,7 @@ async function fetchAll2(url, maxPolls = null) {
  }
 
 async function traitTotals() {
-    let traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
+    //let traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
     let traits = Array.from(new Set( traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
     console.log("traitFiles2", traitFiles)
     let traitTotals = []
