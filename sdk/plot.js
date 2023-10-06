@@ -4,8 +4,8 @@ import {PGS23} from "../main.js";
 
 let plot = {
 }
-let traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
 
+let traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
 let scoringFiles = await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')
 console.log("traitFiles",traitFiles)
 console.log("scoringFiles",scoringFiles)
@@ -47,7 +47,7 @@ async function fetchAll2(url, maxPolls = null) {
      } 
  // filter results by number of SNPs 
  var assocPgsIdsArrSubset =  assocPgsIdsArr.filter(function (el) {
-       return el.variants_number <= pgsVariantsNumber
+       return el.variants_number <= 300
      });
  
    let data = assocPgsIdsArrSubset.map( o => 
