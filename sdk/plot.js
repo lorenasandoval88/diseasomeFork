@@ -47,7 +47,7 @@ async function preferredOrder(obj, order) {
    // get trait files that match selected trait from drop down
 
 
-   traitFiles.filter(tfile => {
+   plot.traitFiles.filter(tfile => {
              if(trait.includes(tfile["trait_categories"][0])){
                  traitFilesArr.push(tfile )
                  }
@@ -75,7 +75,7 @@ async function preferredOrder(obj, order) {
 async function traitTotals() {
     let traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
     let traits = Array.from(new Set( traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
-    console.log("traitFiles2", traitFiles)
+    console.log("traitFiles", plot.traitFiles)
     let traitTotals = []
     let allTraits = Array.from(new Set( traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e =>   
                        e.length).map(JSON.stringify)), JSON.parse)
@@ -90,11 +90,12 @@ async function traitTotals() {
     return traitTotals.sort((a,b) => a.count - b.count)
   } 
 
-console.log("traitTotals()",traitTotals())
+console.log("traitTotals()",await traitTotals())
+plot.traitTotals = await traitTotals()
 
 plot.pgsCounts = async function(){
     let div = document.getElementById("pgsBar")
-        data = await traitTotals()
+        data = plot.traitTotals
         var layout = {
             title: 'Counts of PGS Catalog Scoring Files by Trait',
             margin: {
