@@ -5,8 +5,8 @@ import {PGS23} from "../main.js";
 let plot = {
 }
 
-traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
-scoringFiles = await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')
+plot.traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
+plot.scoringFiles = await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')
 console.log("traitFiles",traitFiles)
 console.log("scoringFiles",scoringFiles)
 
