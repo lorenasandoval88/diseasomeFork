@@ -13,7 +13,7 @@ plot.scoringFiles = await fetchAll2('https://corsproxy.io/?https://www.pgscatalo
 async function fetchAll2(url, maxPolls = null) {
     const allResults = []
   
-    if (maxPolls == null) maxPolls = Infinity
+    if (maxPolls == null) maxPolls = 100//Infinity
     
     for (let i = 0; i < maxPolls; i++) {
       const offset = i * 100
