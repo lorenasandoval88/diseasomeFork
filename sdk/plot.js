@@ -73,7 +73,7 @@ async function preferredOrder(obj, order) {
  }
 
 async function traitTotals() {
-    //let traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
+    let traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
     let traits = Array.from(new Set( traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
     console.log("traitFiles2", traitFiles)
     let traitTotals = []
