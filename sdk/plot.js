@@ -56,7 +56,7 @@ async function preferredOrder(obj, order) {
  // get pgs scoring files if trait data found, unless type "associated_pgs_ids"
  if ( traitFilesArr[0]['trait_categories'] != undefined){
       var pgsIds = traitFilesArr.flatMap( x => x.associated_pgs_ids).sort().filter((v,i) => traitFilesArr.flatMap( x =>    x.associated_pgs_ids).sort().indexOf(v) == i)
-       assocPgsIdsArr = scoringFiles.filter(x => pgsIds.includes(x.id)) // 
+       assocPgsIdsArr = plot.scoringFiles.filter(x => pgsIds.includes(x.id)) // 
      } 
  // filter results by number of SNPs 
  var assocPgsIdsArrSubset =  assocPgsIdsArr.filter(function (el) {
