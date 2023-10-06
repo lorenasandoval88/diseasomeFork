@@ -92,6 +92,7 @@ async function traitTotals() {
 
 console.log("traitTotals()",await traitTotals())
 plot.traitTotals = await traitTotals()
+console.log("traitTotals()",plot.traitTotals)
 
 plot.pgsCounts = async function(){
     let div = document.getElementById("pgsBar")
