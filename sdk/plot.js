@@ -13,9 +13,9 @@ plot.scoringFiles = await fetchAll2('https://corsproxy.io/?https://www.pgscatalo
 async function fetchAll2(url, maxPolls = null) {
     const allResults = []
   
-    if (maxPolls == null) maxPolls = 100//Infinity
+    if (maxPolls == null) maxPolls = 10//Infinity
     
-    for (let i = 0; i < 5; i++) {//maxPolls; i++) {
+    for (let i = 0; i < 1; i++) {//maxPolls; i++) {
       const offset = i * 100
       let queryUrl = `${url}?limit=100&offset=${offset}`
       
@@ -47,12 +47,13 @@ async function preferredOrder(obj, order) {
    // get trait files that match selected trait from drop down
 
 
-   plot.traitFiles.filter(tfile => {
+   plot.traitFiles.map(tfile => {
              if(trait.includes(tfile["trait_categories"][0])){
                  traitFilesArr.push(tfile )
                  }
                })
-   
+ console.log("traitFilesArr", traitFilesArr)
+
  // get pgs scoring files if trait data found, unless type "associated_pgs_ids"
  if ( traitFilesArr[0]['trait_categories'] != undefined){
       var pgsIds = traitFilesArr.flatMap( x => x.associated_pgs_ids).sort().filter((v,i) => traitFilesArr.flatMap( x =>    x.associated_pgs_ids).sort().indexOf(v) == i)
@@ -75,7 +76,7 @@ async function preferredOrder(obj, order) {
 async function traitTotals() {
     let traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
     let traits = Array.from(new Set( traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
-    console.log("traitFiles", plot.traitFiles)
+    console.log("plot.traitFiles", plot.traitFiles)
     let traitTotals = []
     let allTraits = Array.from(new Set( traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e =>   
                        e.length).map(JSON.stringify)), JSON.parse)
