@@ -19,11 +19,47 @@ let endpointStore = localforage.createInstance({
     storeName: "endpointStore"
 })
 
+async function getItems(endpoint, requestParams = {blobFlag: false, cacheFlag: true, baseUrl: 'https://data.medicaid.gov/api/1/'}) {
+    await updateCache();
+    const cachedData = await endpointStore.getItem(endpoint);
+    if (cachedData !== null) {
+        endpointStore.setItem(endpoint, {response: cachedData.response, time: Date.now()});
+        return cachedData.response;
+    }
+    const response = await fetch(`${requestParams.baseUrl}${endpoint}`);
+    if (!response.ok){
+        throw new Error("An error occurred in the API get Request");
+    }
+    let responseData;
+    if (requestParams.blobFlag) {
+        responseData = await response.blob();
+    } else {
+        responseData = await response.json();
+    }
+    if (requestParams.cacheFlag) endpointStore.setItem(endpoint, {response: responseData, time: Date.now()});
+    return responseData;
+}
+async function updateCache() {
+    if (updateCount < 10000){
+        updateCount++;
+        return;
+    }
+    console.log("Cache is being updated")
+    for (const key of await endpointStore.keys()) {
+        const value = await endpointStore.getItem(key);
+        if (Date.now() - value.time > 86400000){
+            endpointStore.removeItem(key);
+        }
+    }
+    updateCount = 0;
+}
+
 function clearCache(){
     endpointStore.clear();
 }
 
 export{
+    getItems,
     JSZip,
     pako,
     plotly,

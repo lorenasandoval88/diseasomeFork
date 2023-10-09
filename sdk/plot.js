@@ -15,7 +15,7 @@ async function fetchAll2(url, maxPolls = null) {
   
     if (maxPolls == null) maxPolls = 100//Infinity
     
-    for (let i = 0; i < maxPolls; i++) {
+    for (let i = 0; i < 5; i++) {//maxPolls; i++) {
       const offset = i * 100
       let queryUrl = `${url}?limit=100&offset=${offset}`
       
