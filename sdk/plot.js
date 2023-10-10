@@ -1,9 +1,12 @@
-import {plotly} from "../dependencies.js";
-import {PGS23} from "../main.js"; 
+import {
+    plotly
+} from "../dependencies.js";
+import {
+    PGS23
+} from "../main.js";
 
 
-let plot = {
-}
+let plot = {}
 
 plot.traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
 plot.scoringFiles = await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')
@@ -12,119 +15,117 @@ plot.scoringFiles = await fetchAll2('https://corsproxy.io/?https://www.pgscatalo
 
 async function fetchAll2(url, maxPolls = null) {
     const allResults = []
-  
-    if (maxPolls == null) maxPolls = 10//Infinity
-    
-    for (let i = 0; i < 1; i++) {//maxPolls; i++) {
-      const offset = i * 100
-      let queryUrl = `${url}?limit=100&offset=${offset}`
-      
-      const results = (await (await fetch(queryUrl)).json()).results
-      results.forEach(result => allResults.push(result))
-      
-      if (results.length < 100) {
-        break 
-      }
+
+    if (maxPolls == null) maxPolls = Infinity
+
+    for (let i = 0; i < 2; i++) { //maxPolls; i++) {
+        const offset = i * 100
+        let queryUrl = `${url}?limit=100&offset=${offset}`
+
+        const results = (await (await fetch(queryUrl)).json()).results
+        results.forEach(result => allResults.push(result))
+
+        if (results.length < 100) {
+            break
+        }
     }
     return allResults
-  }
+}
 
 async function preferredOrder(obj, order) {
     var newObject = {};
-    for(var i = 0; i < order.length; i++) {
-        if(obj.hasOwnProperty(order[i])) {
+    for (var i = 0; i < order.length; i++) {
+        if (obj.hasOwnProperty(order[i])) {
             newObject[order[i]] = obj[order[i]];
-          //console.log(obj[order[i]])
+            //console.log(obj[order[i]])
         }
     }
     return newObject;
 }
 
 
-  async function getPgsFiles(trait){
+function getPgsFiles(trait) {
     let traitFilesArr = []
-   let assocPgsIdsArr = []
-   // get trait files that match selected trait from drop down
-
-
-   plot.traitFiles.map(tfile => {
-             if(trait.includes(tfile["trait_categories"][0])){
-                 traitFilesArr.push(tfile )
-                 }
-               })
- console.log("traitFilesArr", traitFilesArr)
-
- // get pgs scoring files if trait data found, unless type "associated_pgs_ids"
- if ( traitFilesArr[0]['trait_categories'] != undefined){
-      var pgsIds = traitFilesArr.flatMap( x => x.associated_pgs_ids).sort().filter((v,i) => traitFilesArr.flatMap( x =>    x.associated_pgs_ids).sort().indexOf(v) == i)
-       assocPgsIdsArr = plot.scoringFiles.filter(x => pgsIds.includes(x.id)) // 
-     } 
- // filter results by number of SNPs 
- var assocPgsIdsArrSubset =  assocPgsIdsArr.filter(function (el) {
-       return el.variants_number <= 300
-     });
- 
-   let data = assocPgsIdsArrSubset.map( o => 
- preferredOrder(o,[ "id","trait_efo", "variants_number","weight_type", "trait_reported",  "name", "publication", "matches_publication", "samples_variants", "samples_training", "trait_additional", "method_name", "method_params",  "variants_interactions", "variants_genomebuild", "ancestry_distribution", "date_release", "ftp_harmonized_scoring_files","ftp_scoring_file", "license"]))
-   //   if (data.length == 0){
-   //   data.push({"id":`no pgs files with less than ${pgsVariantsNumber} SNPs`})
-   //   return data
-   // }
-   return data
- }
-
-async function traitTotals() {
-    let traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
-    let traits = Array.from(new Set( traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
-    console.log("plot.traitFiles", plot.traitFiles)
-    let traitTotals = []
-    let allTraits = Array.from(new Set( traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e =>   
-                       e.length).map(JSON.stringify)), JSON.parse)
-    let allScores = traits.map( x => getPgsFiles(x)) 
-    
-    allTraits.map(( x, i)=> {
-      let counts = {}
-      counts["trait"]= x
-      counts["count"]= allScores[i].length
-      traitTotals.push(counts)
-    })
-    return traitTotals.sort((a,b) => a.count - b.count)
-  } 
-
-console.log("traitTotals()",await traitTotals())
-plot.traitTotals = await traitTotals()
-console.log("traitTotals()",plot.traitTotals)
-
-plot.pgsCounts = async function(){
-    let div = document.getElementById("pgsBar")
-        data = plot.traitTotals
-        var layout = {
-            title: 'Counts of PGS Catalog Scoring Files by Trait',
-            margin: {
-            l: 250,
-            r: 20,
-           // t: 100,
-            b: 70
-          }
+    let assocPgsIdsArr = []
+    let pgsIds = []
+    // get trait files that match selected trait from drop down
+    plot.traitFiles.map(tfile => {
+        if (trait.includes(tfile["trait_categories"][0])) {
+            traitFilesArr.push(tfile)
         }
-        var dt = 
-        [
-             {
-            x: data.map(x=>x.count),
-            y: data.map(x=>x.trait),
-            type: 'bar',
-            orientation: 'h'
-          }
-        ]
-          
-        //   const myDiv = DOM.element("div");
-          plotly.newPlot(div, data, layout);
-          //return myDiv
-        
+    })
+    //console.log("traitFilesArr", traitFilesArr)
+
+    // get pgs scoring files if trait data found, unless type "associated_pgs_ids"
+
+    if (traitFilesArr.length != 0) {
+        pgsIds.push( traitFilesArr.flatMap(x => x.associated_pgs_ids).sort().filter((v, i) => traitFilesArr.flatMap(x => x.associated_pgs_ids).sort().indexOf(v) == i))
+    }
+ let pgsIds2 = pgsIds.flatMap(x=> x)
+    //console.log("pgsIds", pgsIds.flatMap(x=> x))
+
+    assocPgsIdsArr.push(plot.scoringFiles.filter(x => pgsIds2.includes(x.id)))
+    //console.log("assocPgsIdsArr", assocPgsIdsArr)
+
+    // filter results by number of SNPs 
+    var assocPgsIdsArrSubset = assocPgsIdsArr[0].filter(el => el.variants_number <= 200)
+    //console.log("assocPgsIdsArrSubset", assocPgsIdsArrSubset)
+
+    let data = assocPgsIdsArrSubset.map(o =>
+        preferredOrder(o, ["id", "trait_efo", "variants_number", "weight_type", "trait_reported", "name", "publication", "matches_publication", "samples_variants", "samples_training", "trait_additional", "method_name", "method_params", "variants_interactions", "variants_genomebuild", "ancestry_distribution", "date_release", "ftp_harmonized_scoring_files", "ftp_scoring_file", "license"]))
+    return assocPgsIdsArrSubset
+}
+
+
+function traitTotals() {
+    // let traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
+    let traits = Array.from(new Set(plot.traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
+    let allScores = traits.map( x =>  getPgsFiles(x))//getPgsFiles(traits[2])
+    // console.log("allScores", allScores)
+    // console.log(" traits:", traits)
+    let traitTotals = []
+
+    traits.map((x, i) => {
+        let counts = {}
+        counts["trait"] = x
+        counts["count"] = allScores[i].length
+        traitTotals.push(counts)
+    })
+    return traitTotals.sort((a, b) => a.count - b.count)
+}
+
+plot.traitTotals = traitTotals()
+
+plot.pgsCounts = async function () {
+    let div = document.getElementById("pgsBar")
+    //console.log("traitTotals",plot.traitTotals)
+
+    //        data = plot.traitTotals
+    var layout = {
+        autosize: true,
+        title: 'Counts of PGS Catalog Scoring Files by Trait',
+        margin: {
+            l: 150,
+            r: 10,
+            t: -10,
+            b: -10
+        }
+    }
+    var dt = [{
+        x: plot.traitTotals.map(x => x.count),
+        y: plot.traitTotals.map(x => x.trait),
+        type: 'bar',
+        orientation: 'h'
+    }]
+    //console.log("dt",dt)
+    //   const myDiv = DOM.element("div");
+    plotly.newPlot(div, dt, layout);
+    //return myDiv
+
 }
 plot.pgsCounts()
 
-plot.plotAllMatchByEffect4  = async function(data, errorDiv ,dv) {
+plot.plotAllMatchByEffect4 = async function (data, errorDiv, dv) {
     //https://community.plotly.com/t/fill-shade-a-chart-above-a-specific-y-value-in-plotlyjs/5133
 
     const obj = {}
@@ -135,25 +136,25 @@ plot.plotAllMatchByEffect4  = async function(data, errorDiv ,dv) {
 
     errorDiv.innerHTML = ''
     let duplicate = ''
-    
+
     const matched = data.pgsMatchMy23.map(function (v) {
         //console.log("data.pgsMatchMy23",v)
-        if(v.length==2){
+        if (v.length == 2) {
             return v[1]
 
-        } else if(v.length==3){
-            console.log("two 23andme SNPS mapped to one pgs variant",v)
+        } else if (v.length == 3) {
+            console.log("two 23andme SNPS mapped to one pgs variant", v)
             duplicate += `<span style="font-size:small; color: red">Warning : two 23andMe variants mapped to pgs variant : chr.position ${v[2][indChr]+"."+v[2][indPos]}<br>Only the first 23andMe variant is used: ${v[0]}</span><br>`
             errorDiv.innerHTML = duplicate
             return v[2]
-        }else if(v.length>3){
+        } else if (v.length > 3) {
             duplicate += `<span style="font-size:small; color: red">Warning : more than two 23andMe variants mapped to a pgs variant<br>please check 23andMe file for duplicate chromosome.position</span><br>`
             errorDiv.innerHTML = duplicate
-            console.log("more than 2 23andme SNPS mapped to one pgs variant",v)
+            console.log("more than 2 23andme SNPS mapped to one pgs variant", v)
             return v[2]
-    }
-    }) 
-     // separate pgs.dt into 2 (matches and non matches) arrays and then sort by effect  
+        }
+    })
+    // separate pgs.dt into 2 (matches and non matches) arrays and then sort by effect  
     // " matched" data
 
     const matched_risk = matched.map((j) => {
@@ -315,18 +316,23 @@ plot.plotAllMatchByEffect4  = async function(data, errorDiv ,dv) {
     var rx_zero = new RegExp(/\bzero?(?!S)/);
     var rx_one = new RegExp(/\bone?(?!S)/);
     var rx_two = new RegExp(/\btwo?(?!S)/);
+
     function getSortingKey(value) {
         if (rx_not.test(value)) {
-            return 2}
+            return 2
+        }
         if (rx_zero.test(value)) {
-            return 3}
+            return 3
+        }
         if (rx_one.test(value)) {
-            return 4}
+            return 4
+        }
         if (rx_two.test(value)) {
-            return 5}
+            return 5
+        }
         return 1;
     }
-    const conditions = conditions_arr.sort(function(x,y){
+    const conditions = conditions_arr.sort(function (x, y) {
         return getSortingKey(x) - getSortingKey(y);
     });
     const traces = [];
@@ -349,7 +355,7 @@ plot.plotAllMatchByEffect4  = async function(data, errorDiv ,dv) {
             }
         })
     })
-      
+
 
     var layout = {
         title: {
@@ -360,8 +366,8 @@ plot.plotAllMatchByEffect4  = async function(data, errorDiv ,dv) {
         },
         margin: {
             l: 140,
-          },
- 
+        },
+
         showlegend: true,
         legend: {
             orientation: 'v',
@@ -378,13 +384,13 @@ plot.plotAllMatchByEffect4  = async function(data, errorDiv ,dv) {
             gridcolor: '#bdbdbd',
             gridwidth: 1,
             linecolor: '#636363',
-             title: {
+            title: {
                 text: '<span style="font-size:large">Chromosome and Position</span>',
                 font: {
                     size: 24
-                  },
+                },
                 standoff: 10
-             },
+            },
             tickfont: {
                 size: 10.5
             },
@@ -411,11 +417,11 @@ plot.plotAllMatchByEffect4  = async function(data, errorDiv ,dv) {
     data.plot.traces = traces
 
     plotly.newPlot(dv, traces, layout, config)
-    tabulateAllMatchByEffect(PGS23.data,document.getElementById('tabulateAllMatchByEffectDiv'))
+    tabulateAllMatchByEffect(PGS23.data, document.getElementById('tabulateAllMatchByEffectDiv'))
 }
 
 /* Plot percent of matched and not matched betas */
-async function tabulateAllMatchByEffect(data , div ) {
+async function tabulateAllMatchByEffect(data, div) {
 
     if (!div) {
         div = document.createElement('div')
@@ -447,22 +453,24 @@ async function tabulateAllMatchByEffect(data , div ) {
     const indEffect_weight = data.pgs.cols.indexOf('effect_weight')
 
     let n = jj.length
-    
+
     jj.forEach((ind, i) => {
         //let jnd=n-ind
-        
+
         let row = document.createElement('tr')
         tbody.appendChild(row)
 
         let xi = data.pgsMatchMy23[ind]
         let my_23idx = 1
-         if(xi.length>2){my_23idx = 2} 
+        if (xi.length > 2) {
+            my_23idx = 2
+        }
         row.innerHTML = `<tr><td align="left">${i+1})</td><td align="center">${Math.round(xi[my_23idx][indEffect_weight]*1000)/1000}</td><td align="center">${data.alleles[ind]}</td><td align="left">${Math.round(data.calcRiskScore[ind]*1000)/1000}</td><td align="left" style="font-size:small;color:darkgreen"><a href="https://myvariant.info/v1/variant/chr${xi.at(-1)[indChr]}:g.${xi.at(-1)[indPos]}${xi.at(-1)[indOther_allele]}>${xi.at(-1)[indEffect_allele]}" target="_blank">Chr${xi.at(-1)[indChr]}.${xi.at(-1)[indPos]}:g.${xi.at(-1)[indOther_allele]}>${xi.at(-1)[indEffect_allele]}</a></td><td align="left"><a href="https://www.ncbi.nlm.nih.gov/snp/${xi[0][0]}" target="_blank">${xi[0][0]}</a><td align="left"><a href="https://www.snpedia.com/index.php/${xi[0][0]}" target="_blank">  wiki   </a></td></tr>`
     })
 }
 
 /* Plot percent of matched and not matched betas */
-plot.pieChart  = async function(data = PGS23.data) {
+plot.pieChart = async function (data = PGS23.data) {
     pieChartDiv.style.height = 19 + 'em'
 
     /* Plot percent of matched and not matched betas */
@@ -486,7 +494,9 @@ plot.pieChart  = async function(data = PGS23.data) {
         marker: {
             colors: ["#2ca02c", "grey"],
             size: 19,
-            line: {color: 'black' }
+            line: {
+                color: 'black'
+            }
         },
         textfont: {
             color: 'black',
@@ -504,13 +514,17 @@ plot.pieChart  = async function(data = PGS23.data) {
     }]
     var layout = {
         title: {
-        text:` PGS#${data.pgs.meta.pgs_id.replace(/^.*0+/,'')}: total β contribution for ${data.pgsMatchMy23.length} matched <br>and ${data.pgs.dt.length-data.pgsMatchMy23.length} unmatched variants`,
-        font: {size: 19}
-     },
-        width:'20em',
+            text: ` PGS#${data.pgs.meta.pgs_id.replace(/^.*0+/,'')}: total β contribution for ${data.pgsMatchMy23.length} matched <br>and ${data.pgs.dt.length-data.pgsMatchMy23.length} unmatched variants`,
+            font: {
+                size: 19
+            }
+        },
+        width: '20em',
         legend: {
-           xanchor:"right",
-            font: { size: 16 }
+            xanchor: "right",
+            font: {
+                size: 16
+            }
         },
     };
     var config = {
@@ -521,5 +535,7 @@ plot.pieChart  = async function(data = PGS23.data) {
 }
 
 
-console.log("plot",plot)
-export{ plot}
+console.log("plot", plot)
+export {
+    plot
+}

@@ -113,3 +113,14 @@
       transform: translatex(-50%);
     }
   }
+
+  /* pgs traits bar plot*/
+  #bar {
+    height: fit-content;
+
+}
+body {
+  position: relative;
+  height: auto;
+  min-height: 100% !important;
+}
