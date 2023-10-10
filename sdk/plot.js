@@ -20,7 +20,7 @@ async function fetchAll2(url, maxPolls = null) {
 
     for (let i = 0; i < 2; i++) { //maxPolls; i++) {
         const offset = i * 100
-        consoel.log("i",i)
+        console.log("i",i)
         let queryUrl = `${url}?limit=100&offset=${offset}`
 
         const results = (await (await fetch(queryUrl)).json()).results
