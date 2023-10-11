@@ -1,6 +1,7 @@
 import { plotly} from "../dependencies.js";
 import { PGS23} from "../main.js";
 import localforage from 'https://cdn.skypack.dev/localforage';
+console.log("plot.js loaded")
 
 let plot = {dt: []}
 
@@ -16,63 +17,51 @@ localforage.config({
 
 let pgsScoresTraits = localforage.createInstance({
     name: dbName,
-    storeName: "endpointStore"
+    storeName: "PGS_Catalog"
 })
 
 
-// 630 total trait files 
-// 3787 total scoring files 
+
+plot.dt.pgsIds = []
 plot.dt.traitFiles = (await fetchAll2('https://www.pgscatalog.org/rest/trait/all')).flatMap(x=>x)
-plot.dt.scoringFiles = (await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')).flatMap(x=>x)
-// console.log("traitFiles",plot.dt.traitFiles)
-// console.log("scoringFiles",plot.dt.scoringFiles)
+//plot.dt.scoringFiles = (await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')).flatMap(x=>x)
+// pgs ids for all traits for overview barplot
+let traits = Array.from(new Set(plot.dt.traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
+traits.map( x =>  getAllPgsIds(x))
 
 
 
 async function fetchAll2(url, maxPolls = null) {
+    var spinner = document.getElementById("spinner");
+    spinner.style.display = "block";
     const allResults = []
     const counts = (await (await(fetch(url))).json())
-    //console.log("counts",counts)
     if (maxPolls == null) maxPolls = Infinity
 
 // loop throught the pgs catalog API to get all files using "offset"
     for (let i = 0; i < Math.ceil( counts.count/100) ; i++) {  //4; i++) { //maxPolls; i++) {
         let offset = i * 100
         let queryUrl = `${url}?limit=100&offset=${offset}`
-        //console.log("Math.ceil( counts.count/100)",Math.ceil( counts.count/100))
-        // console.log("i",i)
-        // console.log("queryUrl",queryUrl)
 
         // get trait files and scoring files from indexDB if the exist
         let cachedData = await pgsScoresTraits.getItem(queryUrl);
-        //console.log("let cachedData = await endpointStore.getItem(queryUrl)",cachedData)
-        // console.log("cachedData == null",cachedData == null)
 
         // cach url and data 
         if  (cachedData !== null){
-            //console.log("Not NULL:")
-            //console.log("Not NULL:",cachedData)
             allResults.push(cachedData)
            
         } else if (cachedData == null) {
             let notCachedData = (await (await fetch(queryUrl)).json()).results
-            //console.log("cachedData == null:",cachedData == null)
-            //console.log("NULL!!!! not catched")
-            //console.log("NULL!!!:",notCachedData)
 
-            //console.log("NULL:",notCachedData)
             pgsScoresTraits.setItem(queryUrl, notCachedData);
             allResults.push(notCachedData)
         }
-        // let res = (await (await fetch(queryUrl)).json()).results
-        // res.forEach(x => allResults.push(x))
+
         if (allResults.length > 40) {
             break
-        }
-        //console.log("allResults.length ",allResults.length )
-     
+        }     
 }
-//console.log("allResults",allResults)
+spinner.style.display = "none";
 return allResults
 
 }
@@ -92,10 +81,8 @@ async function preferredOrder(obj, order) {
 
 
 
-
-function getPgsFiles(trait) {
+function getAllPgsIds(trait) {
     let traitFilesArr = []
-    let assocPgsIdsArr = []
     let pgsIds = []
     // get trait files that match selected trait from drop down
     plot.dt.traitFiles.map(tfile => {
@@ -103,50 +90,91 @@ function getPgsFiles(trait) {
             traitFilesArr.push(tfile)
         }
     })
-    //console.log("traitFilesArr", traitFilesArr)
-
-    // get pgs scoring files if trait data found, unless type "associated_pgs_ids"
 
     if (traitFilesArr.length != 0) {
         pgsIds.push( traitFilesArr.flatMap(x => x.associated_pgs_ids).sort().filter((v, i) => traitFilesArr.flatMap(x => x.associated_pgs_ids).sort().indexOf(v) == i))
     }
- let pgsIds2 = pgsIds.flatMap(x=> x)
-    //console.log("pgsIds", pgsIds.flatMap(x=> x))
+    let pgsIds2 = pgsIds.flatMap(x=> x)
 
-    assocPgsIdsArr.push(plot.dt.scoringFiles.filter(x => pgsIds2.includes(x.id)))
-    //console.log("assocPgsIdsArr", assocPgsIdsArr)
+    let obj = {}
+    obj["trait"] = trait
+    obj["count"] = pgsIds2.length
+    obj["ids"] = pgsIds2
 
-    //TODO add limit below for subsetting
-    // filter results by number of SNPs 
-    var assocPgsIdsArrSubset = assocPgsIdsArr[0].filter(el => el.variants_number <= 90000000)
-
-    //console.log("assocPgsIdsArrSubset", assocPgsIdsArrSubset)
-
-    let data = assocPgsIdsArrSubset.map(o =>
-        preferredOrder(o, ["id", "trait_efo", "variants_number", "weight_type", "trait_reported", "name", "publication", "matches_publication", "samples_variants", "samples_training", "trait_additional", "method_name", "method_params", "variants_interactions", "variants_genomebuild", "ancestry_distribution", "date_release", "ftp_harmonized_scoring_files", "ftp_scoring_file", "license"]))
-    return data
+    plot.dt["pgsIds"].push(obj)
 }
 
-function getTraitFilesCounts() {
 
-    let traits = Array.from(new Set(plot.dt.traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
-    let allScores = traits.map( x =>  getPgsFiles(x))//getPgsFiles(traits[2])
-    // console.log("allScores", allScores)
-    // console.log(" traits:", traits)
-    let counts = []
 
-    traits.map((x, i) => {
-        let obj = {}
-        obj["trait"] = x
-        obj["count"] = allScores[i].length
-        counts.push(obj)
-    })
-    return counts.sort((a, b) => a.count - b.count)
-}
 
-plot.dt.traitFilesCount = getTraitFilesCounts()
+// function getPgsFiles(trait) {
+//     let traitFilesArr = []
+//     let assocPgsIdsArr = []
+//     let pgsIds = []
+//     // get trait files that match selected trait from drop down
+//     plot.dt.traitFiles.map(tfile => {
+//         if (trait.includes(tfile["trait_categories"][0])) {
+//             traitFilesArr.push(tfile)
+//         }
+//     })
+//     //console.log("traitFilesArr", traitFilesArr)
+
+//     // get pgs scoring files if trait data found, unless type "associated_pgs_ids"
+
+//     if (traitFilesArr.length != 0) {
+//         pgsIds.push( traitFilesArr.flatMap(x => x.associated_pgs_ids).sort().filter((v, i) => traitFilesArr.flatMap(x => x.associated_pgs_ids).sort().indexOf(v) == i))
+//     }
+//     let pgsIds2 = pgsIds.flatMap(x=> x)
+//     console.log("line 118 pgsIds2", pgsIds2)
+
+//     assocPgsIdsArr.push(plot.dt.scoringFiles.filter(x => pgsIds2.includes(x.id)))
+//     //console.log("assocPgsIdsArr", assocPgsIdsArr)
+
+//     //TODO add limit below for subsetting
+//     // filter results by number of SNPs 
+//     var assocPgsIdsArrSubset = assocPgsIdsArr[0].filter(el => el.variants_number <= 90000000)
+
+//     //console.log("assocPgsIdsArrSubset", assocPgsIdsArrSubset)
+//     console.log("line 128 pgsIds", trait, pgsIds)
+
+//     // ADDED pgsIds to plot obj
+
+//     let obj = {}
+//     obj["trait"] = trait
+//     obj["count"] = pgsIds2.length
+//     obj["ids"] = pgsIds2
+//     plot.dt["pgsIds"].push(obj)
+//     // obj[trait]=pgsIds2
+//     // plot.dt["pgsIds"].push(obj)
+//     // console.log("trait",trait)
+//     let data = assocPgsIdsArrSubset.map(o =>
+//         preferredOrder(o, ["id", "trait_efo", "variants_number", "weight_type", "trait_reported", "name", "publication", "matches_publication", "samples_variants", "samples_training", "trait_additional", "method_name", "method_params", "variants_interactions", "variants_genomebuild", "ancestry_distribution", "date_release", "ftp_harmonized_scoring_files", "ftp_scoring_file", "license"]))
+//     return data
+// }
+
+// function getTraitFilesCounts() {
+
+//     let traits = Array.from(new Set(plot.dt.traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
+//     let allScores = traits.map( x =>  getPgsFiles(x))
+//     // console.log("allScores", allScores)
+//     // console.log(" traits:", traits)
+//     let counts = []
+
+//     traits.map((x, i) => {
+//         let obj = {}
+//         obj["trait"] = x
+//         obj["count"] = allScores[i].length
+//         counts.push(obj)
+//     })
+//     return counts.sort((a, b) => a.count - b.count)
+// }
+//plot.dt.traitFilesCount = getTraitFilesCounts()
+
+
 
 plot.pgsCounts = async function () {
+
+    let plotDt = (plot.dt.pgsIds).sort(function (a, b) {return a.count - b.count});
 
     let div = document.getElementById("pgsBar")
     var layout = {
@@ -160,8 +188,9 @@ plot.pgsCounts = async function () {
         }
     }
     var dt = [{
-        x: plot.dt.traitFilesCount.map(x => x.count),
-        y: plot.dt.traitFilesCount.map(x => x.trait),
+  
+        x: plotDt.map(x => x.count),
+        y: plotDt.map(x => x.trait),
         type: 'bar',
         orientation: 'h'
     }]

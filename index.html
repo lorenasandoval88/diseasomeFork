@@ -60,8 +60,6 @@
     </nav>
 
     <!-- side panel -->
-
-    <!-- main banner -->
     <section class="bgimage" id="home">
         <div class="container-fluid">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hero-text">
@@ -74,53 +72,83 @@
         </div>
 
     </section>
+
+    <!-- pgs scoring counts bar plot -->
+    <h5>PGS catalog Traits</h5>
+    <div class="spinner-border m-5" role="status" id="spinner">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+
+    <div id="pgsBar"></div>
+
+
+    <!--  input to select pgs trait and variant number-->
+    <h5>Select trait</h5>
+    <!--Make sure the form has the autocomplete function switched off:-->
+    <form autocomplete="off" action="javascript:alert(`${traitInput.value} submitted`);">
+        <div class="autocomplete" style="width:300px;">
+            <input id="traitInput" type="text" name="traitInput" placeholder="Cancer">
+        </div>
+        <input type="submit">
+    </form>
+<br>
+
+<form>
+    <h5>Select max number of variants in a scoring file</h5>
+    <select id="myList" >
     
-    <h5 >PGS catalog Traits</h5>
+        <option> ---Choose a size--- </option>
+        <option> 10 </option>
+        <option> 100 </option>
+        <option> 500 </option>
+        <option> 1000 </option>
+    </select>
+ 
+        </form>
+        
+        <!-- calc section-->
+        <section id="calculator">
+            <h5>Polygenic Risk Score Calculator</h5>
+            <div id="calcDiv">
+                <script>
+                    (async () => {
+                        pgs23 = await import('http://127.0.0.1:5500/main.js')
+                        //pgs23 = await import(location.href+'/export.js')
+                        //pgs23 = await import('https://episphere.github.io/diseasome/main.js')
+                        pgs23.ui()
+                    })()
+                </script>
+            </div>
+        </section>
 
-        <div id = "pgsBar" >
-        </div>
+        <script type="module" src="./input.js" ></script> 
+        <script type="module" src="sdk/plot.js"></script>
+        <script type="module" src="main.js"></script>
+        <script type="module" src="dependencies.js"></script>
+        <script type="module" src="pgs.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js"></script>
 
 
-    <!-- calc section-->
-    <section id="calculator">
-        <h5 >Polygenic Risk Score Calculator</h5>
-        <div id="calcDiv">
-            <script>
-                (async () => {
-                    pgs23 = await import('http://127.0.0.1:5500/main.js')
-                    //pgs23 = await import(location.href+'/export.js')
-                    //pgs23 = await import('https://episphere.github.io/diseasome/main.js')
-                    pgs23.ui()
-                })()
-            </script>
-        </div>
-    </section>
-
-    <script type="module" src="sdk/plot.js"></script>
-    <script type="module" src="main.js"></script>
-    <script type="module" src="dependencies.js"></script>
-    <script type="module" src="pgs.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js"></script>
-
-
-    <!-- privacy section-->
-    <section id="notices">
-        <span style="font-size:large;">Privacy:</span><br>
-        <span style="font-size:small;color:black;font-weight:normal">
-            All data and calculations take place in the browser. No data or calculations circulate by a server. This
-            application is, foremost, an exercise in privacy-preserving biomedical informatics for consumer genomics
-            data.
-        </span><br>
-        <span style="font-size:large;">Scope/Limitations:</span><br>
-        <span style="font-size:small;color:black;font-weight:normal">
-            This calculator was devised as an implementation proof of concept. It has a number of important limitations
-            for epidemiology research and it does not meet criteria for clinical use. The current tool uses
-            pre-imputation genotype data and thus results in a low number of SNP matches. Most important, only the
-            relative risk model <a href='https://www.nature.com/articles/nrg.2016.27#Sec5' target="_blank">(Box 1, eq
-                2)</a> is calculated, with no effort to determine absolute risk of disease. Finally, the risk
-            calculation will only be attempted for PGS catalog entries reporting effects as beta values under
-            "effect_weight".</span>
-    </section>
+        <!-- privacy section-->
+        <section id="notices">
+            <span style="font-size:large;">Privacy:</span><br>
+            <span style="font-size:small;color:black;font-weight:normal">
+                All data and calculations take place in the browser. No data or calculations circulate by a server. This
+                application is, foremost, an exercise in privacy-preserving biomedical informatics for consumer genomics
+                data.
+            </span><br>
+            <span style="font-size:large;">Scope/Limitations:</span><br>
+            <span style="font-size:small;color:black;font-weight:normal">
+                This calculator was devised as an implementation proof of concept. It has a number of important
+                limitations
+                for epidemiology research and it does not meet criteria for clinical use. The current tool uses
+                pre-imputation genotype data and thus results in a low number of SNP matches. Most important, only the
+                relative risk model <a href='https://www.nature.com/articles/nrg.2016.27#Sec5' target="_blank">(Box 1,
+                    eq
+                    2)</a> is calculated, with no effort to determine absolute risk of disease. Finally, the risk
+                calculation will only be attempted for PGS catalog entries reporting effects as beta values under
+                "effect_weight".</span>
+        </section>
 
 
 </body>
