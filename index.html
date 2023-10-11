@@ -83,7 +83,7 @@
 
 
     <!--  input to select pgs trait and variant number-->
-    <h5>Select trait</h5>
+    <h5>Type trait of interest</h5>
     <!--Make sure the form has the autocomplete function switched off:-->
     <form autocomplete="off" action="javascript:alert(`${traitInput.value} submitted`);">
         <div class="autocomplete" style="width:300px;">
@@ -112,9 +112,9 @@
             <div id="calcDiv">
                 <script>
                     (async () => {
-                        pgs23 = await import('http://127.0.0.1:5500/main.js')
+                        //pgs23 = await import('http://127.0.0.1:5500/main.js')
                         //pgs23 = await import(location.href+'/export.js')
-                        //pgs23 = await import('https://episphere.github.io/diseasome/main.js')
+                        pgs23 = await import('https://episphere.github.io/diseasome/main.js')
                         pgs23.ui()
                     })()
                 </script>
