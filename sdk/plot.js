@@ -2,6 +2,8 @@ import { plotly} from "../dependencies.js";
 import { PGS23} from "../main.js";
 import localforage from 'https://cdn.skypack.dev/localforage';
 
+let plot = {dt: []}
+
 const dbName = "localforage"
 localforage.config({
     driver: [
@@ -12,53 +14,70 @@ localforage.config({
     name: 'localforage'
 });
 
-let endpointStore = localforage.createInstance({
+let pgsScoresTraits = localforage.createInstance({
     name: dbName,
     storeName: "endpointStore"
 })
 
-let plot = {dt: []}
 
 // 630 total trait files 
 // 3787 total scoring files 
 plot.dt.traitFiles = (await fetchAll2('https://www.pgscatalog.org/rest/trait/all')).flatMap(x=>x)
 plot.dt.scoringFiles = (await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')).flatMap(x=>x)
-//console.log("traitFiles",traitFiles)
-//console.log("scoringFiles",scoringFiles)
+// console.log("traitFiles",plot.dt.traitFiles)
+// console.log("scoringFiles",plot.dt.scoringFiles)
+
+
 
 async function fetchAll2(url, maxPolls = null) {
     const allResults = []
-
+    const counts = (await (await(fetch(url))).json())
+    //console.log("counts",counts)
     if (maxPolls == null) maxPolls = Infinity
 
 // loop throught the pgs catalog API to get all files using "offset"
-    for (let i = 0; i < maxPolls; i++) {  //4; i++) { //maxPolls; i++) {
+    for (let i = 0; i < Math.ceil( counts.count/100) ; i++) {  //4; i++) { //maxPolls; i++) {
         let offset = i * 100
         let queryUrl = `${url}?limit=100&offset=${offset}`
-        //console.log("queryUrl",queryUrl)
+        //console.log("Math.ceil( counts.count/100)",Math.ceil( counts.count/100))
+        // console.log("i",i)
+        // console.log("queryUrl",queryUrl)
 
         // get trait files and scoring files from indexDB if the exist
-        let cachedData = await endpointStore.getItem(queryUrl);
-        //console.log("cachedData",cachedData)
+        let cachedData = await pgsScoresTraits.getItem(queryUrl);
+        //console.log("let cachedData = await endpointStore.getItem(queryUrl)",cachedData)
+        // console.log("cachedData == null",cachedData == null)
 
         // cach url and data 
-        if (cachedData == null) {
-            let cachedData = (await (await fetch(queryUrl)).json()).results
-            endpointStore.setItem(queryUrl, cachedData);
-            allResults.push(cachedData.response)
+        if  (cachedData !== null){
+            //console.log("Not NULL:")
+            //console.log("Not NULL:",cachedData)
+            allResults.push(cachedData)
+           
+        } else if (cachedData == null) {
+            let notCachedData = (await (await fetch(queryUrl)).json()).results
+            //console.log("cachedData == null:",cachedData == null)
+            //console.log("NULL!!!! not catched")
+            //console.log("NULL!!!:",notCachedData)
+
+            //console.log("NULL:",notCachedData)
+            pgsScoresTraits.setItem(queryUrl, notCachedData);
+            allResults.push(notCachedData)
         }
         // let res = (await (await fetch(queryUrl)).json()).results
         // res.forEach(x => allResults.push(x))
-        if (allResults.length > 30) {
+        if (allResults.length > 40) {
             break
         }
-        allResults.push(cachedData)
         //console.log("allResults.length ",allResults.length )
      
 }
+//console.log("allResults",allResults)
 return allResults
 
 }
+
+
 
 async function preferredOrder(obj, order) {
     var newObject = {};
@@ -70,6 +89,8 @@ async function preferredOrder(obj, order) {
     }
     return newObject;
 }
+
+
 
 
 function getPgsFiles(trait) {
@@ -124,7 +145,6 @@ function getTraitFilesCounts() {
 }
 
 plot.dt.traitFilesCount = getTraitFilesCounts()
-console.log("plot.dt.traitFiles counts",  plot.dt.traitFilesCount.reduce((total, obj) => obj.count + total,0))
 
 plot.pgsCounts = async function () {
 
@@ -149,6 +169,8 @@ plot.pgsCounts = async function () {
 }
 
 plot.pgsCounts()
+
+
 
 plot.plotAllMatchByEffect4 = async function (data, errorDiv, dv) {
     //https://community.plotly.com/t/fill-shade-a-chart-above-a-specific-y-value-in-plotlyjs/5133
