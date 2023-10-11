@@ -1,15 +1,28 @@
-import {
-    plotly
-} from "../dependencies.js";
-import {
-    PGS23
-} from "../main.js";
+import { plotly} from "../dependencies.js";
+import { PGS23} from "../main.js";
+import localforage from 'https://cdn.skypack.dev/localforage';
 
+const dbName = "localforage"
+localforage.config({
+    driver: [
+        localforage.INDEXEDDB,
+        localforage.LOCALSTORAGE,
+        localforage.WEBSQL
+    ],
+    name: 'localforage'
+});
 
-let plot = {}
+let endpointStore = localforage.createInstance({
+    name: dbName,
+    storeName: "endpointStore"
+})
 
-plot.traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
-plot.scoringFiles = await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')
+let plot = {dt: []}
+
+// 630 total trait files 
+// 3787 total scoring files 
+plot.dt.traitFiles = (await fetchAll2('https://www.pgscatalog.org/rest/trait/all')).flatMap(x=>x)
+plot.dt.scoringFiles = (await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')).flatMap(x=>x)
 //console.log("traitFiles",traitFiles)
 //console.log("scoringFiles",scoringFiles)
 
@@ -18,19 +31,33 @@ async function fetchAll2(url, maxPolls = null) {
 
     if (maxPolls == null) maxPolls = Infinity
 
-    for (let i = 0; i < 2; i++) { //maxPolls; i++) {
-        const offset = i * 100
-        console.log("i",i)
+// loop throught the pgs catalog API to get all files using "offset"
+    for (let i = 0; i < maxPolls; i++) {  //4; i++) { //maxPolls; i++) {
+        let offset = i * 100
         let queryUrl = `${url}?limit=100&offset=${offset}`
+        //console.log("queryUrl",queryUrl)
 
-        const results = (await (await fetch(queryUrl)).json()).results
-        results.forEach(result => allResults.push(result))
+        // get trait files and scoring files from indexDB if the exist
+        let cachedData = await endpointStore.getItem(queryUrl);
+        //console.log("cachedData",cachedData)
 
-        if (results.length < 100) {
+        // cach url and data 
+        if (cachedData == null) {
+            let cachedData = (await (await fetch(queryUrl)).json()).results
+            endpointStore.setItem(queryUrl, cachedData);
+            allResults.push(cachedData.response)
+        }
+        // let res = (await (await fetch(queryUrl)).json()).results
+        // res.forEach(x => allResults.push(x))
+        if (allResults.length > 30) {
             break
         }
-    }
-    return allResults
+        allResults.push(cachedData)
+        //console.log("allResults.length ",allResults.length )
+     
+}
+return allResults
+
 }
 
 async function preferredOrder(obj, order) {
@@ -50,7 +77,7 @@ function getPgsFiles(trait) {
     let assocPgsIdsArr = []
     let pgsIds = []
     // get trait files that match selected trait from drop down
-    plot.traitFiles.map(tfile => {
+    plot.dt.traitFiles.map(tfile => {
         if (trait.includes(tfile["trait_categories"][0])) {
             traitFilesArr.push(tfile)
         }
@@ -65,43 +92,43 @@ function getPgsFiles(trait) {
  let pgsIds2 = pgsIds.flatMap(x=> x)
     //console.log("pgsIds", pgsIds.flatMap(x=> x))
 
-    assocPgsIdsArr.push(plot.scoringFiles.filter(x => pgsIds2.includes(x.id)))
+    assocPgsIdsArr.push(plot.dt.scoringFiles.filter(x => pgsIds2.includes(x.id)))
     //console.log("assocPgsIdsArr", assocPgsIdsArr)
 
+    //TODO add limit below for subsetting
     // filter results by number of SNPs 
-    var assocPgsIdsArrSubset = assocPgsIdsArr[0].filter(el => el.variants_number <= 200)
+    var assocPgsIdsArrSubset = assocPgsIdsArr[0].filter(el => el.variants_number <= 90000000)
+
     //console.log("assocPgsIdsArrSubset", assocPgsIdsArrSubset)
 
     let data = assocPgsIdsArrSubset.map(o =>
         preferredOrder(o, ["id", "trait_efo", "variants_number", "weight_type", "trait_reported", "name", "publication", "matches_publication", "samples_variants", "samples_training", "trait_additional", "method_name", "method_params", "variants_interactions", "variants_genomebuild", "ancestry_distribution", "date_release", "ftp_harmonized_scoring_files", "ftp_scoring_file", "license"]))
-    return assocPgsIdsArrSubset
+    return data
 }
 
+function getTraitFilesCounts() {
 
-function traitTotals() {
-    // let traitFiles = await fetchAll2('https://www.pgscatalog.org/rest/trait/all')
-    let traits = Array.from(new Set(plot.traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
+    let traits = Array.from(new Set(plot.dt.traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
     let allScores = traits.map( x =>  getPgsFiles(x))//getPgsFiles(traits[2])
     // console.log("allScores", allScores)
     // console.log(" traits:", traits)
-    let traitTotals = []
+    let counts = []
 
     traits.map((x, i) => {
-        let counts = {}
-        counts["trait"] = x
-        counts["count"] = allScores[i].length
-        traitTotals.push(counts)
+        let obj = {}
+        obj["trait"] = x
+        obj["count"] = allScores[i].length
+        counts.push(obj)
     })
-    return traitTotals.sort((a, b) => a.count - b.count)
+    return counts.sort((a, b) => a.count - b.count)
 }
 
-plot.traitTotals = traitTotals()
+plot.dt.traitFilesCount = getTraitFilesCounts()
+console.log("plot.dt.traitFiles counts",  plot.dt.traitFilesCount.reduce((total, obj) => obj.count + total,0))
 
 plot.pgsCounts = async function () {
-    let div = document.getElementById("pgsBar")
-    //console.log("traitTotals",plot.traitTotals)
 
-    //        data = plot.traitTotals
+    let div = document.getElementById("pgsBar")
     var layout = {
         autosize: true,
         title: 'Counts of PGS Catalog Scoring Files by Trait',
@@ -113,17 +140,14 @@ plot.pgsCounts = async function () {
         }
     }
     var dt = [{
-        x: plot.traitTotals.map(x => x.count),
-        y: plot.traitTotals.map(x => x.trait),
+        x: plot.dt.traitFilesCount.map(x => x.count),
+        y: plot.dt.traitFilesCount.map(x => x.trait),
         type: 'bar',
         orientation: 'h'
     }]
-    //console.log("dt",dt)
-    //   const myDiv = DOM.element("div");
     plotly.newPlot(div, dt, layout);
-    //return myDiv
-
 }
+
 plot.pgsCounts()
 
 plot.plotAllMatchByEffect4 = async function (data, errorDiv, dv) {
@@ -534,9 +558,5 @@ plot.pieChart = async function (data = PGS23.data) {
 
     plotly.newPlot('pieChartDiv', piePlotData, layout, config);
 }
-
-
-console.log("plot", plot)
-export {
-    plot
-}
+console.log("plot",plot)
+export { plot}
