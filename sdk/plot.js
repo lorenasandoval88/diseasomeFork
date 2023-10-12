@@ -32,6 +32,8 @@ traits.map( x =>  getAllPgsIds(x))
 
 
 async function fetchAll2(url, maxPolls = null) {
+
+
     var spinner = document.getElementById("spinner");
     spinner.style.display = "block";
     const allResults = []
@@ -90,7 +92,6 @@ function getAllPgsIds(trait) {
             traitFilesArr.push(tfile)
         }
     })
-
     if (traitFilesArr.length != 0) {
         pgsIds.push( traitFilesArr.flatMap(x => x.associated_pgs_ids).sort().filter((v, i) => traitFilesArr.flatMap(x => x.associated_pgs_ids).sort().indexOf(v) == i))
     }
@@ -100,6 +101,7 @@ function getAllPgsIds(trait) {
     obj["trait"] = trait
     obj["count"] = pgsIds2.length
     obj["ids"] = pgsIds2
+    obj["traitFiles"] = traitFilesArr
 
     plot.dt["pgsIds"].push(obj)
 }
