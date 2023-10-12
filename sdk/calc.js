@@ -1,6 +1,4 @@
-import {
-    plot
-} from './plot.js'
+import { allTraits} from './allTraits.js'
 
 console.log("---------------------------------------------")
 
@@ -22,7 +20,7 @@ console.log("calc",calc)
 
 async function getTraitFiles(trait) {
     // get trait files that match selected trait from drop down
-    plot.dt.pgsIds.map(x => {
+    allTraits.dt.pgsIds.map(x => {
     if (trait.includes(x.trait)) {
         calc.dt.trait = x.trait,
         calc.dt.pgsIds = x.ids
@@ -42,7 +40,7 @@ async function getTraitFiles(trait) {
         arr.push(obj)
         }
     })
-    calc.dt[`scoringFilesSubsetbyVarLen`] = arr
+    calc.dt[`scoringFilesbyVarLen`] = arr
     return arr
 }
 

@@ -5,7 +5,7 @@ import {
 
 import { 
     plot
-} from './sdk/plot.js' 
+} from './sdk/allTraits.js' 
 
 import { 
     pgs

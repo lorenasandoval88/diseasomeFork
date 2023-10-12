@@ -1,7 +1,7 @@
-import { plot} from './sdk/plot.js'
+import { allTraits} from './sdk/allTraits.js'
 
   /*An array containing all the country names in the world:*/
-let traits = plot.dt.pgsIds.map( x => x.trait)
+let traits = allTraits.dt.pgsIds.map( x => x.trait)
 //console.log(traits)
 
 function autocomplete(inp, arr) {

@@ -1,9 +1,9 @@
 import { plotly} from "../dependencies.js";
 import { PGS23} from "../main.js";
 import localforage from 'https://cdn.skypack.dev/localforage';
-console.log("plot.js loaded")
+console.log("allTraits.js loaded")
 
-let plot = {dt: []}
+let allTraits = {dt: []}
 
 const dbName = "localforage"
 localforage.config({
@@ -22,11 +22,11 @@ let pgsScoresTraits = localforage.createInstance({
 
 
 
-plot.dt.pgsIds = []
-plot.dt.traitFiles = (await fetchAll2('https://www.pgscatalog.org/rest/trait/all')).flatMap(x=>x)
-//plot.dt.scoringFiles = (await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')).flatMap(x=>x)
-// pgs ids for all traits for overview barplot
-let traits = Array.from(new Set(plot.dt.traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
+allTraits.dt.pgsIds = []
+allTraits.dt.traitFiles = (await fetchAll2('https://www.pgscatalog.org/rest/trait/all')).flatMap(x=>x)
+//allTraits.dt.scoringFiles = (await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')).flatMap(x=>x)
+// pgs ids for all traits for overview allTraits
+let traits = Array.from(new Set(allTraits.dt.traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
 traits.map( x =>  getAllPgsIds(x))
 
 
@@ -87,7 +87,7 @@ function getAllPgsIds(trait) {
     let traitFilesArr = []
     let pgsIds = []
     // get trait files that match selected trait from drop down
-    plot.dt.traitFiles.map(tfile => {
+    allTraits.dt.traitFiles.map(tfile => {
         if (trait.includes(tfile["trait_categories"][0])) {
             traitFilesArr.push(tfile)
         }
@@ -103,7 +103,7 @@ function getAllPgsIds(trait) {
     obj["ids"] = pgsIds2
     obj["traitFiles"] = traitFilesArr
 
-    plot.dt["pgsIds"].push(obj)
+    allTraits.dt["pgsIds"].push(obj)
 }
 
 
@@ -114,7 +114,7 @@ function getAllPgsIds(trait) {
 //     let assocPgsIdsArr = []
 //     let pgsIds = []
 //     // get trait files that match selected trait from drop down
-//     plot.dt.traitFiles.map(tfile => {
+//     allTraits.dt.traitFiles.map(tfile => {
 //         if (trait.includes(tfile["trait_categories"][0])) {
 //             traitFilesArr.push(tfile)
 //         }
@@ -129,7 +129,7 @@ function getAllPgsIds(trait) {
 //     let pgsIds2 = pgsIds.flatMap(x=> x)
 //     console.log("line 118 pgsIds2", pgsIds2)
 
-//     assocPgsIdsArr.push(plot.dt.scoringFiles.filter(x => pgsIds2.includes(x.id)))
+//     assocPgsIdsArr.push(allTraits.dt.scoringFiles.filter(x => pgsIds2.includes(x.id)))
 //     //console.log("assocPgsIdsArr", assocPgsIdsArr)
 
 //     //TODO add limit below for subsetting
@@ -139,15 +139,15 @@ function getAllPgsIds(trait) {
 //     //console.log("assocPgsIdsArrSubset", assocPgsIdsArrSubset)
 //     console.log("line 128 pgsIds", trait, pgsIds)
 
-//     // ADDED pgsIds to plot obj
+//     // ADDED pgsIds to allTraits obj
 
 //     let obj = {}
 //     obj["trait"] = trait
 //     obj["count"] = pgsIds2.length
 //     obj["ids"] = pgsIds2
-//     plot.dt["pgsIds"].push(obj)
+//     allTraits.dt["pgsIds"].push(obj)
 //     // obj[trait]=pgsIds2
-//     // plot.dt["pgsIds"].push(obj)
+//     // allTraits.dt["pgsIds"].push(obj)
 //     // console.log("trait",trait)
 //     let data = assocPgsIdsArrSubset.map(o =>
 //         preferredOrder(o, ["id", "trait_efo", "variants_number", "weight_type", "trait_reported", "name", "publication", "matches_publication", "samples_variants", "samples_training", "trait_additional", "method_name", "method_params", "variants_interactions", "variants_genomebuild", "ancestry_distribution", "date_release", "ftp_harmonized_scoring_files", "ftp_scoring_file", "license"]))
@@ -156,7 +156,7 @@ function getAllPgsIds(trait) {
 
 // function getTraitFilesCounts() {
 
-//     let traits = Array.from(new Set(plot.dt.traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
+//     let traits = Array.from(new Set(allTraits.dt.traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
 //     let allScores = traits.map( x =>  getPgsFiles(x))
 //     // console.log("allScores", allScores)
 //     // console.log(" traits:", traits)
@@ -170,13 +170,13 @@ function getAllPgsIds(trait) {
 //     })
 //     return counts.sort((a, b) => a.count - b.count)
 // }
-//plot.dt.traitFilesCount = getTraitFilesCounts()
+//allTraits.dt.traitFilesCount = getTraitFilesCounts()
 
 
 
-plot.pgsCounts = async function () {
+allTraits.pgsCounts = async function () {
 
-    let plotDt = (plot.dt.pgsIds).sort(function (a, b) {return a.count - b.count});
+    let allTraitsDt = (allTraits.dt.pgsIds).sort(function (a, b) {return a.count - b.count});
 
     let div = document.getElementById("pgsBar")
     var layout = {
@@ -191,20 +191,20 @@ plot.pgsCounts = async function () {
     }
     var dt = [{
   
-        x: plotDt.map(x => x.count),
-        y: plotDt.map(x => x.trait),
+        x: allTraitsDt.map(x => x.count),
+        y: allTraitsDt.map(x => x.trait),
         type: 'bar',
         orientation: 'h'
     }]
     plotly.newPlot(div, dt, layout);
 }
 
-plot.pgsCounts()
+allTraits.pgsCounts()
 
 
 
-plot.plotAllMatchByEffect4 = async function (data, errorDiv, dv) {
-    //https://community.plotly.com/t/fill-shade-a-chart-above-a-specific-y-value-in-plotlyjs/5133
+allTraits.allTraitsAllMatchByEffect4 = async function (data, errorDiv, dv) {
+    //https://community.allTraitsly.com/t/fill-shade-a-chart-above-a-specific-y-value-in-allTraitslyjs/5133
 
     const obj = {}
     const indChr = data.pgs.cols.indexOf('hm_chr')
@@ -314,7 +314,7 @@ plot.plotAllMatchByEffect4 = async function (data, errorDiv, dv) {
     const two_allele_idx = data.alleles.map((elm, idx) => elm == 2 ? idx : '')
         .filter(String);
 
-    // x (chr pos)  y (betas or betas*dosage) plot data
+    // x (chr pos)  y (betas or betas*dosage) allTraits data
     const zero_allele_chrpos = zero_allele_idx.map(i => `Chr${matched[i][indChr]}.${matched[i][indPos]}`)
     const one_allele_chrpos = one_allele_idx.map(i => `Chr${matched[i][indChr]}.${matched[i][indPos]}`)
     const two_allele_chrpos = two_allele_idx.map(i => `Chr${matched[i][indChr]}.${matched[i][indPos]}`)
@@ -369,14 +369,14 @@ plot.plotAllMatchByEffect4 = async function (data, errorDiv, dv) {
         Push(obj.matched_by_alleles.one_allele, obj.matched_by_alleles.one_allele.risk)).concat(
         Push(obj.matched_by_alleles.two_allele, obj.matched_by_alleles.two_allele.risk))
 
-    plotRiskDiv.style.height = 20 + data.pgs.dt.length * 1.1 + 'em'
-    plotAllMatchByEffectDiv.style.height = 20 + data.pgs.dt.length * 1.1 + 'em'
+    allTraitsRiskDiv.style.height = 20 + data.pgs.dt.length * 1.1 + 'em'
+    allTraitsAllMatchByEffectDiv.style.height = 20 + data.pgs.dt.length * 1.1 + 'em'
 
     // make new objects with id, all mapped to one condition sorted by value
     const cache = []
     const chooseData = [" ", `${zero_allele.length } matched, zero alleles`, `${one_allele.length } matched, one allele`, `${two_allele.length } matched, two alleles`, `${not_matched.length} not matched`]
 
-    const plotData = items
+    const allTraitsData = items
         .filter(function (item) {
             if (chooseData.indexOf(item.category) === -1) {
                 cache.push(item);
@@ -387,8 +387,8 @@ plot.plotAllMatchByEffect4 = async function (data, errorDiv, dv) {
         })
         .sort((a, b) => parseFloat(a.risk) - parseFloat(b.risk))
 
-    // re-order plot legend manually, order conditions list by regex 
-    const conditions_arr = Array.from(new Set(plotData.map(a => a.category)))
+    // re-order allTraits legend manually, order conditions list by regex 
+    const conditions_arr = Array.from(new Set(allTraitsData.map(a => a.category)))
 
     var rx_not = new RegExp(/\bnot?(?!S)/);
     var rx_zero = new RegExp(/\bzero?(?!S)/);
@@ -415,7 +415,7 @@ plot.plotAllMatchByEffect4 = async function (data, errorDiv, dv) {
     });
     const traces = [];
     conditions.forEach(function (category) {
-        var newArray = plotData.filter(function (el) {
+        var newArray = allTraitsData.filter(function (el) {
             return el.category == category;
         });
         traces.push({
@@ -491,21 +491,21 @@ plot.plotAllMatchByEffect4 = async function (data, errorDiv, dv) {
     var config = {
         responsive: true
     }
-    data.plot = obj
-    data.plot.traces = traces
+    data.allTraits = obj
+    data.allTraits.traces = traces
 
-    plotly.newPlot(dv, traces, layout, config)
+    allTraitsly.newallTraits(dv, traces, layout, config)
     tabulateAllMatchByEffect(PGS23.data, document.getElementById('tabulateAllMatchByEffectDiv'))
 }
 
-/* Plot percent of matched and not matched betas */
+/* allTraits percent of matched and not matched betas */
 async function tabulateAllMatchByEffect(data, div) {
 
     if (!div) {
         div = document.createElement('div')
         document.body.appendChild(div)
     }
-    div.innerHTML = `<span style="font-size:x-large">PRS = exp( ∑ (𝛽*z)) = ${Math.round(data.PRS*1000)/1000}</span><br><hr><div>Table for ${data.plot.matched_by_alleles.one_allele.dt.length + data.plot.matched_by_alleles.two_allele.dt.length} matched PGS variants (dosage = 1 or 2)</div><hr>`
+    div.innerHTML = `<span style="font-size:x-large">PRS = exp( ∑ (𝛽*z)) = ${Math.round(data.PRS*1000)/1000}</span><br><hr><div>Table for ${data.allTraits.matched_by_alleles.one_allele.dt.length + data.allTraits.matched_by_alleles.two_allele.dt.length} matched PGS variants (dosage = 1 or 2)</div><hr>`
     // sort by absolute value
     let jj = [...Array(data.calcRiskScore.length)].map((_, i) => i) // match indexes
     // remove zero effect
@@ -547,19 +547,19 @@ async function tabulateAllMatchByEffect(data, div) {
     })
 }
 
-/* Plot percent of matched and not matched betas */
-plot.pieChart = async function (data = PGS23.data) {
+/* allTraits percent of matched and not matched betas */
+allTraits.pieChart = async function (data = PGS23.data) {
     pieChartDiv.style.height = 19 + 'em'
 
-    /* Plot percent of matched and not matched betas */
+    /* allTraits percent of matched and not matched betas */
     const risk_composition = {}
-    const risk1 = data.plot.matched.risk.reduce((partialSum, a) => partialSum + a, 0);
-    const risk2 = data.plot.not_matched.risk.reduce((partialSum, a) => partialSum + a, 0);
-    risk_composition[`total β for ${data.plot.matched.risk.length} <br>matched variants`] = risk1
-    risk_composition[`total β for ${data.plot.not_matched.risk.length} <br>unmatched variants`] = risk2
+    const risk1 = data.allTraits.matched.risk.reduce((partialSum, a) => partialSum + a, 0);
+    const risk2 = data.allTraits.not_matched.risk.reduce((partialSum, a) => partialSum + a, 0);
+    risk_composition[`total β for ${data.allTraits.matched.risk.length} <br>matched variants`] = risk1
+    risk_composition[`total β for ${data.allTraits.not_matched.risk.length} <br>unmatched variants`] = risk2
     var y = Object.values(risk_composition)
     var x = Object.keys(risk_composition)
-    var piePlotData = [{
+    var pieallTraitsData = [{
         values: y,
         labels: x,
         //showlegend: false,
@@ -609,7 +609,7 @@ plot.pieChart = async function (data = PGS23.data) {
         responsive: true
     }
 
-    plotly.newPlot('pieChartDiv', piePlotData, layout, config);
+    allTraitsly.newallTraits('pieChartDiv', pieallTraitsData, layout, config);
 }
-console.log("plot",plot)
-export { plot}
+console.log("allTraits",allTraits)
+export { allTraits}

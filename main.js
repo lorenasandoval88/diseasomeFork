@@ -1,7 +1,7 @@
 console.log("main.js loaded")
 import { pgs} from './pgs.js'
 import {JSZip} from "./dependencies.js";
-import { plot} from './sdk/plot.js'
+import { allTraits} from './sdk/allTraits.js'
 
 // This library uses ES6 modules
 
