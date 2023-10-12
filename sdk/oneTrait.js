@@ -2,10 +2,10 @@ import { allTraits} from './allTraits.js'
 
 console.log("---------------------------------------------")
 
-console.log("calc.js loaded")
+console.log("oneTrait.js loaded")
 
 
-let calc = {
+let oneTrait = {
     dt: []
 }
 let num = document.getElementById("myList").value
@@ -14,17 +14,17 @@ console.log("Selected Trait:",trait)
 console.log("Max # variants in scoring Files:",num)
 
 getTraitFiles(trait)
-getscoringFiles(calc.dt.pgsIds )
-console.log("calc",calc)
+getscoringFiles(oneTrait.dt.pgsIds )
+console.log("oneTrait",oneTrait)
 
 
 async function getTraitFiles(trait) {
     // get trait files that match selected trait from drop down
     allTraits.dt.pgsIds.map(x => {
     if (trait.includes(x.trait)) {
-        calc.dt.trait = x.trait,
-        calc.dt.pgsIds = x.ids
-        calc.dt.traitFiles = x.traitFiles
+        oneTrait.dt.trait = x.trait,
+        oneTrait.dt.pgsIds = x.ids
+        oneTrait.dt.traitFiles = x.traitFiles
     }
     })
 }
@@ -40,7 +40,7 @@ async function getTraitFiles(trait) {
         arr.push(obj)
         }
     })
-    calc.dt[`scoringFilesbyVarLen`] = arr
+    oneTrait.dt[`scoringFilesbyVarLen`] = arr
     return arr
 }
 
@@ -51,7 +51,7 @@ async function getTraitFiles(trait) {
 
 
 
-calc.loadPGS = async (i = 1) => {
+oneTrait.loadPGS = async (i = 1) => {
     // startng with a default pgs 
     let div = PGS23.divPGS
     div.innerHTML = `<b style="color:maroon">A)</b> PGS # <input id="pgsID" value=${i} size=5 > <button id='btLoadPgs'>load</button><span id="showLargeFile" hidden=true><input id="checkLargeFile"type="checkbox">large file (under development)</span> 
@@ -81,7 +81,7 @@ calc.loadPGS = async (i = 1) => {
         if ((fsize > 1000000) & (!div.querySelector('#checkLargeFile').checked)) {
             console.log('largeFile processing ...')
             //div.querySelector('#summarySpan').hidden = true
-            let data = document.getElementById("PGS23calc").PGS23data
+            let data = document.getElementById("PGS23oneTrait").PGS23data
             if (data.pgs) {
                 delete data.pgs
             }
