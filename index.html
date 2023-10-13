@@ -82,16 +82,18 @@
     <div id="pgsBar"></div>
 
 
-    <!--  input to select pgs trait and variant number-->
+    <!--  input to select pgs trait -->
     <h5>Type trait of interest</h5>
     <!--Make sure the form has the autocomplete function switched off:-->
     <form autocomplete="off" action="javascript:alert(`${traitInput.value} submitted`);">
         <div class="autocomplete" style="width:300px;">
-            <input id="traitInput" type="text" name="traitInput" placeholder="Cancer">
+            <input id="traitInput" type="text" name="traitInput" value="Sex-specific PGS">
         </div>
         <input type="submit">
     </form>
 <br>
+
+    <!--  input to select variant number-->
 
 <form>
     <h5>Select max number of variants in scoring files</h5>
@@ -102,8 +104,19 @@
         <option> 500 </option>
         <option> 1000 </option>
     </select>
- 
-        </form>
+ </form>
+ <br>
+
+    <!--  input to select pgs scoring file-->
+    <h5>Type PGS ID of interest</h5>
+    <!--Make sure the form has the autocomplete function switched off:-->
+    <form autocomplete="off" action="javascript:alert(`${pgsIdInput.value} submitted`);">
+        <div class="autocomplete" style="width:300px;">
+            <input id="pgsIdInput" type="text" name="pgsIdInput" value="PGS000718">
+        </div>
+        <input type="submit">
+    </form>
+<br>
         
         <!-- calc section-->
         <section id="calculator">

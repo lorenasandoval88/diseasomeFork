@@ -1,8 +1,11 @@
 import { allTraits} from './sdk/allTraits.js'
+import { oneTrait} from './sdk/oneTrait.js'
 
   /*An array containing all the country names in the world:*/
-let traits = allTraits.dt.pgsIds.map( x => x.trait)
-//console.log(traits)
+let traits = allTraits.dt.traits.map( x => x.trait)
+
+console.log("oneTrait.dt2.scoringFiles",oneTrait.dt2.scoringFiles)
+
 
 function autocomplete(inp, arr) {
     /*the autocomplete function takes
@@ -103,7 +106,9 @@ function autocomplete(inp, arr) {
   }
 
 
-/*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
+/*initiate the autocomplete function on the "myInput" element, and pass along the data array as possible autocomplete values:*/
 autocomplete(document.getElementById("traitInput"), traits);
+autocomplete(document.getElementById("pgsIdInput"), oneTrait.dt.pgsIds);
+
 
 

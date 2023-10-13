@@ -1,55 +1,95 @@
-import { allTraits} from './allTraits.js'
+import {
+    allTraits
+} from './allTraits.js'
 
 console.log("---------------------------------------------")
-
 console.log("oneTrait.js loaded")
 
 
 let oneTrait = {
-    dt: []
+    dt: {},
+    dt2: {
+        scoringFiles: []
+    }
 }
+
 let num = document.getElementById("myList").value
-let trait = "Biological process"
-console.log("Selected Trait:",trait)
-console.log("Max # variants in scoring Files:",num)
+let trait = "Sex-specific PGS"
+
+
+let pgsIds2 = []
+allTraits.dt.traits.map(x => {
+    if (trait.includes(x.trait)) {
+        pgsIds2.push(x.ids)
+    }
+}).flatMap(x => x)
 
 getTraitFiles(trait)
-getscoringFiles(oneTrait.dt.pgsIds )
-console.log("oneTrait",oneTrait)
+
+console.log("pgsIds2", pgsIds2)
 
 
 async function getTraitFiles(trait) {
     // get trait files that match selected trait from drop down
-    allTraits.dt.pgsIds.map(x => {
-    if (trait.includes(x.trait)) {
-        oneTrait.dt.trait = x.trait,
-        oneTrait.dt.pgsIds = x.ids
-        oneTrait.dt.traitFiles = x.traitFiles
-    }
-    })
-}
-
- async function getscoringFiles(pgsIds) {
-    let arr = []
-    pgsIds.map(async (x) => {
-        let obj = {}
-        let score =  await (await (fetch(`https://www.pgscatalog.org/rest/score/${x}`))).json()
-
-        if (score.variants_number < num){
-        obj[x] =  score
-        arr.push(obj)
+    allTraits.dt.traits.map(x => {
+        if (trait.includes(x.trait)) {
+            oneTrait.dt.trait = x.trait,
+                oneTrait.dt.pgsIds = x.ids
+            oneTrait.dt.traitFiles = x.traitFiles
         }
     })
-    oneTrait.dt[`scoringFilesbyVarLen`] = arr
-    return arr
 }
 
+async function getscoringFiles(pgsIds) {
+    var scores = []
+    let i = 0
+    while (i < pgsIds.length) {
+
+        let score = await (fetch(`https://www.pgscatalog.org/rest/score/${pgsIds[i]}`)).then(function (response) {
+            return response.json()
+        }).then(function (response) {
+            return response
+        }).catch(function (ex) {
+            console.log("Ha habido algún error: ", ex)
+        })
+        scores.push(score)
+        i += 1
+    }
+    return scores
+}
+let scores = await getscoringFiles(pgsIds2[0])
+console.log("scores***********", scores)
+oneTrait.dt2.scoringFiles = scores
+
+console.log("oneTrait***********", oneTrait)
+
+//.sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
+//console.log("traits2--------------------",traits2)
+
+// async function getscoringFiles(pgsIds) {
+//     let arr= []
+//     let dt = pgsIds.map(async (x) => {
+//         let score =  await (await (fetch(`https://www.pgscatalog.org/rest/score/${x}`))).json()
+//         if (score.variants_number < num){
+//           console.log(score)
+//             oneTrait.dtByLength.scoringFiles.push(score)
 
 
+//             let obj = {}
+//             obj["scores"] = score
+
+//             oneTrait.dtByLength.scoringFiles2.push(obj)
+//             console.log("oneTrait.dtByLength.scoringFiles2",oneTrait.dtByLength.scoringFiles2)
+//             console.log("oneTrait.dtByLength.scoringFiles2 len ",oneTrait.dtByLength.scoringFiles2.length)
+//         }
+//         arr.push(score)
+//         return dt
 
 
+//     })
+// return  arr
 
-
+// }
 
 oneTrait.loadPGS = async (i = 1) => {
     // startng with a default pgs 
@@ -112,7 +152,7 @@ oneTrait.loadPGS = async (i = 1) => {
                 PGS23.pgsTextArea.value = PGS23.pgsObj.txt.slice(0, 100000) + `...\n... (${PGS23.pgsObj.dt.length} variants) ...`
             }
             const cleanObj = structuredClone(PGS23.pgsObj)
-            cleanObj.info = cleanObj.txt.match(/^[^\n]*/)[0]
+            cleanObj.scores = cleanObj.txt.match(/^[^\n]*/)[0]
             delete cleanObj.txt
             PGS23.data.pgs = cleanObj
             div.querySelector('#summarySpan').hidden = false
@@ -120,7 +160,7 @@ oneTrait.loadPGS = async (i = 1) => {
     };
     div.querySelector("#objJSON").onclick = evt => {
         let cleanObj = structuredClone(PGS23.pgsObj)
-        cleanObj.info = cleanObj.txt.match(/^[^\n]*/)[0]
+        cleanObj.scores = cleanObj.txt.match(/^[^\n]*/)[0]
         delete cleanObj.txt
         PGS23.saveFile(JSON.stringify(cleanObj), cleanObj.meta.pgs_id + '.json')
     }
@@ -168,4 +208,9 @@ async function parsePGS(i = 1) {
         obj.meta[aa[0]] = aa[1]
     })
     return obj
+}
+
+
+export {
+    oneTrait
 }

@@ -1,6 +1,9 @@
 import { plotly} from "../dependencies.js";
 import { PGS23} from "../main.js";
 import localforage from 'https://cdn.skypack.dev/localforage';
+
+console.log("---------------------------------------------")
+
 console.log("allTraits.js loaded")
 
 let allTraits = {dt: []}
@@ -22,17 +25,23 @@ let pgsScoresTraits = localforage.createInstance({
 
 
 
-allTraits.dt.pgsIds = []
+allTraits.dt.traits = []
 allTraits.dt.traitFiles = (await fetchAll2('https://www.pgscatalog.org/rest/trait/all')).flatMap(x=>x)
+allTraits.dt.traitFiles2 = (await fetchAll2('https://www.pgscatalog.org/rest/trait/all'))
 //allTraits.dt.scoringFiles = (await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')).flatMap(x=>x)
 // pgs ids for all traits for overview allTraits
-let traits = Array.from(new Set(allTraits.dt.traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
+let traits = Array.from(new Set(allTraits.dt.traitFiles.flatMap(x => x["trait_categories"])
+.sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
+
+console.log("traits-----------------------",traits)
+console.log("allTraits.dt.traitFiles",allTraits.dt.traitFiles)
+console.log("allTraits.dt.traitFiles2",allTraits.dt.traitFiles2)
+
 traits.map( x =>  getAllPgsIds(x))
 
 
 
 async function fetchAll2(url, maxPolls = null) {
-
 
     var spinner = document.getElementById("spinner");
     spinner.style.display = "block";
@@ -65,7 +74,6 @@ async function fetchAll2(url, maxPolls = null) {
 }
 spinner.style.display = "none";
 return allResults
-
 }
 
 
@@ -80,7 +88,6 @@ async function preferredOrder(obj, order) {
     }
     return newObject;
 }
-
 
 
 function getAllPgsIds(trait) {
@@ -102,8 +109,7 @@ function getAllPgsIds(trait) {
     obj["count"] = pgsIds2.length
     obj["ids"] = pgsIds2
     obj["traitFiles"] = traitFilesArr
-
-    allTraits.dt["pgsIds"].push(obj)
+    allTraits.dt.traits.push(obj)
 }
 
 
@@ -140,13 +146,13 @@ function getAllPgsIds(trait) {
 //     console.log("line 128 pgsIds", trait, pgsIds)
 
 //     // ADDED pgsIds to allTraits obj
-
 //     let obj = {}
 //     obj["trait"] = trait
 //     obj["count"] = pgsIds2.length
 //     obj["ids"] = pgsIds2
 //     allTraits.dt["pgsIds"].push(obj)
 //     // obj[trait]=pgsIds2
+
 //     // allTraits.dt["pgsIds"].push(obj)
 //     // console.log("trait",trait)
 //     let data = assocPgsIdsArrSubset.map(o =>
@@ -176,7 +182,7 @@ function getAllPgsIds(trait) {
 
 allTraits.pgsCounts = async function () {
 
-    let allTraitsDt = (allTraits.dt.pgsIds).sort(function (a, b) {return a.count - b.count});
+    let allTraitsDt = (allTraits.dt.traits).sort(function (a, b) {return a.count - b.count});
 
     let div = document.getElementById("pgsBar")
     var layout = {
@@ -612,4 +618,5 @@ allTraits.pieChart = async function (data = PGS23.data) {
     allTraitsly.newallTraits('pieChartDiv', pieallTraitsData, layout, config);
 }
 console.log("allTraits",allTraits)
+
 export { allTraits}
