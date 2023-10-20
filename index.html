@@ -83,85 +83,74 @@
 
 
     <!--  input to select pgs trait -->
-    <h5>Type trait of interest</h5>
-    <!--Make sure the form has the autocomplete function switched off:-->
-    <form autocomplete="off" action="javascript:alert(`${traitInput.value} submitted`);">
-        <div class="autocomplete" style="width:300px;">
-            <input id="traitInput" type="text" name="traitInput" value="Sex-specific PGS">
-        </div>
-        <input type="submit">
+
+    <form>
+        <h5>Select trait of interest</h5>
+        <select id="myTrait2">
+            <option>--Selelct trait from dropdown--</option>
+        </select>
     </form>
-<br>
+    <br>
 
     <!--  input to select variant number-->
 
-<form>
-    <h5>Select max number of variants in scoring files</h5>
-    <select id="myList" >
-    
-        <option> 100 </option>
-        <option> 200 </option>
-        <option> 500 </option>
-        <option> 1000 </option>
-    </select>
- </form>
- <br>
-
-    <!--  input to select pgs scoring file-->
-    <h5>Type PGS ID of interest</h5>
-    <!--Make sure the form has the autocomplete function switched off:-->
-    <form autocomplete="off" action="javascript:alert(`${pgsIdInput.value} submitted`);">
-        <div class="autocomplete" style="width:300px;">
-            <input id="pgsIdInput" type="text" name="pgsIdInput" value="PGS000718">
-        </div>
-        <input type="submit">
+    <form>
+        <h5>Select max number of variants in scoring files</h5>
+        <select id="myNum">
+            <option> 50</option>
+            <option> 100 </option>
+            <option> 500 </option>
+            <option> 1000 </option>
+        </select>
     </form>
-<br>
-        
-        <!-- calc section-->
-        <section id="calculator">
-            <h5>Polygenic Risk Score Calculator</h5>
-            <div id="calcDiv">
-                <script>
-                    (async () => {
-                        //pgs23 = await import('http://127.0.0.1:5500/main.js')
-                        //pgs23 = await import(location.href+'/export.js')
-                        pgs23 = await import('https://episphere.github.io/diseasome/main.js')
-                        pgs23.ui()
-                    })()
-                </script>
-            </div>
-        </section>
+    <br>
 
-        <script type="module" src="./input.js" ></script> 
-        <script type="module" src="sdk/allTraits.js"></script>
-        <script type="module" src="sdk/oneTrait.js"></script>
-        <script type="module" src="main.js"></script>
-        <script type="module" src="dependencies.js"></script>
-        <script type="module" src="pgs.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js"></script>
+    <!-- calc section-->
+    <section id="calculator">
+        <h5>Polygenic Risk Score Calculator</h5>
+        <div id="calcDiv">
+            <script>
+                (async () => {
+                    //pgs23 = await import('http://127.0.0.1:5500/main.js')
+                    //pgs23 = await import(location.href+'/export.js')
+                    pgs23 = await import('https://episphere.github.io/diseasome/main.js')
+                    pgs23.ui()
+                })()
+            </script>
+        </div>
+    </section>
 
 
-        <!-- privacy section-->
-        <section id="notices">
-            <span style="font-size:large;">Privacy:</span><br>
-            <span style="font-size:small;color:black;font-weight:normal">
-                All data and calculations take place in the browser. No data or calculations circulate by a server. This
-                application is, foremost, an exercise in privacy-preserving biomedical informatics for consumer genomics
-                data.
-            </span><br>
-            <span style="font-size:large;">Scope/Limitations:</span><br>
-            <span style="font-size:small;color:black;font-weight:normal">
-                This calculator was devised as an implementation proof of concept. It has a number of important
-                limitations
-                for epidemiology research and it does not meet criteria for clinical use. The current tool uses
-                pre-imputation genotype data and thus results in a low number of SNP matches. Most important, only the
-                relative risk model <a href='https://www.nature.com/articles/nrg.2016.27#Sec5' target="_blank">(Box 1,
-                    eq
-                    2)</a> is calculated, with no effort to determine absolute risk of disease. Finally, the risk
-                calculation will only be attempted for PGS catalog entries reporting effects as beta values under
-                "effect_weight".</span>
-        </section>
+    <script type="module" src="input2.js"></script>
+    <script type="module" src="./input.js"></script>
+    <script type="module" src="sdk/allTraits.js"></script>
+    <script type="module" src="sdk/oneTrait.js"></script>
+    <script type="module" src="main.js"></script>
+    <script type="module" src="dependencies.js"></script>
+    <script type="module" src="pgs.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js"></script>
+
+
+    <!-- privacy section-->
+    <section id="notices">
+        <span style="font-size:large;">Privacy:</span><br>
+        <span style="font-size:small;color:black;font-weight:normal">
+            All data and calculations take place in the browser. No data or calculations circulate by a server. This
+            application is, foremost, an exercise in privacy-preserving biomedical informatics for consumer genomics
+            data.
+        </span><br>
+        <span style="font-size:large;">Scope/Limitations:</span><br>
+        <span style="font-size:small;color:black;font-weight:normal">
+            This calculator was devised as an implementation proof of concept. It has a number of important
+            limitations
+            for epidemiology research and it does not meet criteria for clinical use. The current tool uses
+            pre-imputation genotype data and thus results in a low number of SNP matches. Most important, only the
+            relative risk model <a href='https://www.nature.com/articles/nrg.2016.27#Sec5' target="_blank">(Box 1,
+                eq
+                2)</a> is calculated, with no effort to determine absolute risk of disease. Finally, the risk
+            calculation will only be attempted for PGS catalog entries reporting effects as beta values under
+            "effect_weight".</span>
+    </section>
 
 
 </body>

@@ -1,3 +1,4 @@
+console.log("----------------------------")
 console.log("main.js loaded")
 import { pgs} from './pgs.js'
 import {JSZip} from "./dependencies.js";

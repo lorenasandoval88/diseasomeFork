@@ -1,97 +1,131 @@
-import {
-    allTraits
-} from './allTraits.js'
+import { allTraits} from './allTraits.js'
+import localforage from 'https://cdn.skypack.dev/localforage';
 
-console.log("---------------------------------------------")
+console.log("------------------")
 console.log("oneTrait.js loaded")
+let trait = "Cancer"
+const e = document.getElementById('myTrait2')
 
+e.addEventListener("click", function (e) {
+    console.log(" e.value", e.value)
+});
+
+let oneTraitDb = localforage.createInstance({
+    name: "oneTraitDb",
+    storeName: "scoreFiles"
+})
+
+let oneTraitDb2 = localforage.createInstance({
+    name: "oneTraitDb",
+    storeName: "traitFiles2"
+})
 
 let oneTrait = {
+    functions: {},
     dt: {},
-    dt2: {
-        scoringFiles: []
-    }
+
+}
+let oneTraitSubset = {
+    functions: {},
+    dt: {},
+
 }
 
-let num = document.getElementById("myList").value
-let trait = "Sex-specific PGS"
-
-
-let pgsIds2 = []
+let pgsIds = []
 allTraits.dt.traits.map(x => {
     if (trait.includes(x.trait)) {
-        pgsIds2.push(x.ids)
+        pgsIds.push(x.ids)
     }
 }).flatMap(x => x)
 
-getTraitFiles(trait)
+//biuld object for one trait
+oneTrait.dt = await getTraitFiles(trait)
 
-console.log("pgsIds2", pgsIds2)
+//biuld object for one trait filtered by variant number
+/*execute a function when someone clicks in the document:*/
+const input2 = document.getElementById('myNum')
+input2.addEventListener("click", function (e) {
+    // closeAllLists(e.target);
+    oneTraitSubset.dt = getscoreFiles2()
+    console.log("oneTraitSubset.dt", oneTraitSubset.dt)
+    console.log("click3")
+    //div.hidden = false      
+    // div2.innerHTML = `Found ${oneTraitSubset.dt.scoreFiles.length} scoring files for "${myTrait2.value}"`
+    // select2.parentNode.appendChild(div2)
+
+});
+
 
 
 async function getTraitFiles(trait) {
+    let arr = []
+    var obj = {}
+    let scores = await getscoreFiles(pgsIds[0])
     // get trait files that match selected trait from drop down
     allTraits.dt.traits.map(x => {
         if (trait.includes(x.trait)) {
-            oneTrait.dt.trait = x.trait,
-                oneTrait.dt.pgsIds = x.ids
-            oneTrait.dt.traitFiles = x.traitFiles
+
+            obj["pgsIds"] = x.ids
+            obj["traitFiles"] = x.traitFiles
+            obj["scoreFiles"] = scores
+            obj["trait"] = x.trait
         }
     })
+    return obj
 }
 
-async function getscoringFiles(pgsIds) {
+
+async function getscoreFiles(pgsIds) {
     var scores = []
     let i = 0
     while (i < pgsIds.length) {
+        let url = `https://www.pgscatalog.org/rest/score/${pgsIds[i]}`
+        let cachedData = await oneTraitDb.getItem(url);
+        //console.log("cachedData",cachedData)
+        if (cachedData !== null) {
+            scores.push(cachedData)
 
-        let score = await (fetch(`https://www.pgscatalog.org/rest/score/${pgsIds[i]}`)).then(function (response) {
-            return response.json()
-        }).then(function (response) {
-            return response
-        }).catch(function (ex) {
-            console.log("Ha habido algún error: ", ex)
-        })
-        scores.push(score)
+        } else if (cachedData == null) {
+            let notCachedData =
+                await (fetch(url)).then(function (response) {
+                    return response.json()
+                }).then(function (response) {
+                    return response
+                }).catch(function (ex) {
+                    console.log("There has been an error: ", ex)
+                })
+
+
+            oneTraitDb.setItem(url, notCachedData);
+            scores.push(notCachedData)
+        }
         i += 1
     }
     return scores
 }
-let scores = await getscoringFiles(pgsIds2[0])
-console.log("scores***********", scores)
-oneTrait.dt2.scoringFiles = scores
 
-console.log("oneTrait***********", oneTrait)
+
 
 //.sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
 //console.log("traits2--------------------",traits2)
 
-// async function getscoringFiles(pgsIds) {
-//     let arr= []
-//     let dt = pgsIds.map(async (x) => {
-//         let score =  await (await (fetch(`https://www.pgscatalog.org/rest/score/${x}`))).json()
-//         if (score.variants_number < num){
-//           console.log(score)
-//             oneTrait.dtByLength.scoringFiles.push(score)
+function getscoreFiles2() {
+    let obj = {}
+    let scores = oneTrait.dt.scoreFiles
+    let trait = oneTrait.dt.trait
+    let num = document.getElementById("myNum").value
+    // filter scores by the number of variant in a file
+    console.log("scores", scores)
+    let scores2 = scores.filter(x => x.variants_number < num)
+    obj["scoreFiles"] = scores2
+    obj["trait"] = trait
+    obj["variant_limit"] = num
+    return obj
+}
 
 
-//             let obj = {}
-//             obj["scores"] = score
 
-//             oneTrait.dtByLength.scoringFiles2.push(obj)
-//             console.log("oneTrait.dtByLength.scoringFiles2",oneTrait.dtByLength.scoringFiles2)
-//             console.log("oneTrait.dtByLength.scoringFiles2 len ",oneTrait.dtByLength.scoringFiles2.length)
-//         }
-//         arr.push(score)
-//         return dt
-
-
-//     })
-// return  arr
-
-// }
-
-oneTrait.loadPGS = async (i = 1) => {
+oneTrait.functions.loadPGS = async (i = 1) => {
     // startng with a default pgs 
     let div = PGS23.divPGS
     div.innerHTML = `<b style="color:maroon">A)</b> PGS # <input id="pgsID" value=${i} size=5 > <button id='btLoadPgs'>load</button><span id="showLargeFile" hidden=true><input id="checkLargeFile"type="checkbox">large file (under development)</span> 
@@ -210,7 +244,10 @@ async function parsePGS(i = 1) {
     return obj
 }
 
+console.log("oneTrait:", oneTrait)
+console.log("oneTraitSubset:", oneTraitSubset)
 
 export {
-    oneTrait
+    oneTrait,
+    oneTraitSubset
 }

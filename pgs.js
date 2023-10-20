@@ -1,3 +1,4 @@
+console.log("-------------------")
 console.log("pgs.js loaded")
 import {pako, plotly} from "./dependencies.js";
 

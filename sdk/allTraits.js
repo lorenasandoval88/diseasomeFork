@@ -2,7 +2,7 @@ import { plotly} from "../dependencies.js";
 import { PGS23} from "../main.js";
 import localforage from 'https://cdn.skypack.dev/localforage';
 
-console.log("---------------------------------------------")
+console.log("---------------------")
 
 console.log("allTraits.js loaded")
 
@@ -18,24 +18,28 @@ localforage.config({
     name: 'localforage'
 });
 
-let pgsScoresTraits = localforage.createInstance({
-    name: dbName,
-    storeName: "PGS_Catalog"
+// let allTraitsDb = localforage.createInstance({
+//     name: dbName,
+//     storeName: "PGS_Catalog"
+// })
+
+let allTraitsDb = localforage.createInstance({
+    name: "allTraitsDb",
+    storeName: "traitFiles"
 })
 
 
 
 allTraits.dt.traits = []
 allTraits.dt.traitFiles = (await fetchAll2('https://www.pgscatalog.org/rest/trait/all')).flatMap(x=>x)
-allTraits.dt.traitFiles2 = (await fetchAll2('https://www.pgscatalog.org/rest/trait/all'))
+//allTraits.dt.traitFiles2 = (await fetchAll2('https://www.pgscatalog.org/rest/trait/all'))
 //allTraits.dt.scoringFiles = (await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')).flatMap(x=>x)
 // pgs ids for all traits for overview allTraits
 let traits = Array.from(new Set(allTraits.dt.traitFiles.flatMap(x => x["trait_categories"])
 .sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
 
-console.log("traits-----------------------",traits)
-console.log("allTraits.dt.traitFiles",allTraits.dt.traitFiles)
-console.log("allTraits.dt.traitFiles2",allTraits.dt.traitFiles2)
+//console.log("allTraits.dt.traitFiles",allTraits.dt.traitFiles)
+//console.log("allTraits.dt.traitFiles2",allTraits.dt.traitFiles2)
 
 traits.map( x =>  getAllPgsIds(x))
 
@@ -55,7 +59,7 @@ async function fetchAll2(url, maxPolls = null) {
         let queryUrl = `${url}?limit=100&offset=${offset}`
 
         // get trait files and scoring files from indexDB if the exist
-        let cachedData = await pgsScoresTraits.getItem(queryUrl);
+        let cachedData = await allTraitsDb.getItem(queryUrl);
 
         // cach url and data 
         if  (cachedData !== null){
@@ -64,7 +68,7 @@ async function fetchAll2(url, maxPolls = null) {
         } else if (cachedData == null) {
             let notCachedData = (await (await fetch(queryUrl)).json()).results
 
-            pgsScoresTraits.setItem(queryUrl, notCachedData);
+            allTraitsDb.setItem(queryUrl, notCachedData);
             allResults.push(notCachedData)
         }
 
