@@ -38,9 +38,6 @@ allTraits.dt.traitFiles = (await fetchAll2('https://www.pgscatalog.org/rest/trai
 let traits = Array.from(new Set(allTraits.dt.traitFiles.flatMap(x => x["trait_categories"])
 .sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
 
-//console.log("allTraits.dt.traitFiles",allTraits.dt.traitFiles)
-//console.log("allTraits.dt.traitFiles2",allTraits.dt.traitFiles2)
-
 traits.map( x =>  getAllPgsIds(x))
 
 
@@ -111,7 +108,7 @@ function getAllPgsIds(trait) {
     let obj = {}
     obj["trait"] = trait
     obj["count"] = pgsIds2.length
-    obj["ids"] = pgsIds2
+    obj["pgsIds"] = pgsIds2
     obj["traitFiles"] = traitFilesArr
     allTraits.dt.traits.push(obj)
 }

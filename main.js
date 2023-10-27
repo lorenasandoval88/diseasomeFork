@@ -339,9 +339,11 @@ PGS23.Match2 = function (data, progressReport) {
 function ui() {
 
     let div = document.getElementById('calcDiv')
-
+    var h1= document.createElement('H1');
+    h1.innerHTML = "Description";
+    div.appendChild(h1)
     div.innerHTML = `
-    <span style="font-size:medium;">
+    <br><h5>Individual polygenic risk score calculation (PRS) for 23andme reports, using the PGS Catalog.</h5><span style="font-size:medium;">
 	Below you can select, and inspect, <b style="color:maroon">A)</b> the <a href='https://www.pgscatalog.org' target="_blank">PGS Catalog</a> entries with risk scores for a list of genomic variations; and <b style="color:maroon">B)</b> <a href="https://you.23andme.com/tools/data/download" target="_blank">Your 23andMe data download</a>. Once you have both (A) and (B), you can proceed to <b style="color:maroon">C)</b> to calculate your raw polygenic risk score for the trait targeted by the PGS entry based on <br>PRS  =  exp( ∑ ( 𝛽 * z )). Where β is the effect size (or beta) of one variant and z is the number of copies of the effect allele in that 23andme individual.
     </span>
     <hr>

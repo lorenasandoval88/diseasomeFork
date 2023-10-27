@@ -10,8 +10,6 @@ let oneTrait = { functions: {},   dt: {}}
 let oneTraitSubset = {  functions: {},   dt: {}}
 
 
-
-
 //biuld object for one trait filtered by variant number
 /*execute a function when someone clicks in the document:*/
 const input2 = document.getElementById('myNum')
@@ -21,7 +19,6 @@ input2.addEventListener("click",async function (e) {
 
 });
 
-
   async function getTraitFiles(trait) {
     var obj = {}
     // get trait files that match selected trait from drop down
@@ -30,11 +27,14 @@ input2.addEventListener("click",async function (e) {
              return x
         }
     })
-    let scores =   await getscoreFiles(dt[0].ids)
-    obj["pgsIds"] = dt[0].ids
-    obj["traitFiles"] = dt[0].traitFiles
-    obj["scoreFiles"] = scores
+    console.log("dt", dt)
+    let scores =   await getscoreFiles(dt[0].pgsIds)
     obj["trait"] = dt[0].trait
+    obj["pgsIds"] = dt[0].ids
+    obj["scoreFiles"] = scores
+    obj["traitFiles"] = dt[0].traitFiles
+    obj["variant_limit"] = "none"
+    console.log("oneTrait", obj)
     return  obj
 }
 
@@ -66,21 +66,28 @@ async function getscoreFiles(pgsIds) {
     return scores
 }
 
-
-async function getscoreFiles2() {
-    let obj = {}
+/*execute a function when someone clicks in the document:*/
+const input1 = document.getElementById('myTrait2')
+input1.addEventListener("change",async function (e) {
     var el = document.getElementById('myTrait2')
     let trait2 = el.value
-
     oneTrait.dt =  (await getTraitFiles(trait2))
 
+    console.log("oneTrait.dt", oneTrait.dt)
+
+});
+async function getscoreFiles2() {
+    let obj = {}
     let scores =  oneTrait.dt.scoreFiles
     let trait = oneTrait.dt.trait
     let num = document.getElementById("myNum").value
     // filter scores by the number of variant in a file
     let scores2 = scores.filter(x => x.variants_number < num)
-    obj["scoreFiles"] = scores2
+    let ids2 = scores.filter(x => x.variants_number < num).map(e=> e.id)
+    console.log("ids2:", ids2)
     obj["trait"] = trait
+    obj["pgsIds"] = ids2
+    obj["scoreFiles"] = scores2
     obj["variant_limit"] = num
     return obj
 }
@@ -205,8 +212,8 @@ async function parsePGS(i = 1) {
     return obj
 }
 
-console.log("oneTrait:", oneTrait)
-console.log("oneTraitSubset:", oneTraitSubset)
+// console.log("oneTrait:", oneTrait)
+// console.log("oneTraitSubset:", oneTraitSubset)
 
 export {
     oneTrait,

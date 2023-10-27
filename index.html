@@ -53,13 +53,10 @@
                         <img style="vertical-align:top" src="youtube_img.png" width="25" height="25"></img> Tutorial</a>
                 </li>
             </ul>
-
-
-
         </div>
     </nav>
 
-    <!-- side panel -->
+    <!-- side panel ----------------------------------------------->
     <section class="bgimage" id="home">
         <div class="container-fluid">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hero-text">
@@ -73,7 +70,7 @@
 
     </section>
 
-    <!-- pgs scoring counts bar plot -->
+    <!-- pgs scoring counts bar plot ----------------------------->
     <h5>PGS catalog Traits</h5>
     <div class="spinner-border m-5" role="status" id="spinner">
         <span class="visually-hidden">Loading...</span>
@@ -82,8 +79,7 @@
     <div id="pgsBar"></div>
 
 
-    <!--  input to select pgs trait -->
-
+    <!--  input to select pgs trait ------------------------------>
     <form>
         <h5>Select trait of interest</h5>
         <select id="myTrait2">
@@ -92,11 +88,11 @@
     </form>
     <br>
 
-    <!--  input to select variant number-->
-
+    <!--  input to select variant number --------------------------->
     <form>
         <h5>Select max number of variants in scoring files</h5>
         <select id="myNum">
+            <option>--Selelct variant limit from dropdown--</option>
             <option> 50</option>
             <option> 100 </option>
             <option> 500 </option>
@@ -105,21 +101,15 @@
     </form>
     <br>
 
-    <!-- calc section-->
-    <section id="calculator">
-        <h5>Polygenic Risk Score Calculator</h5>
-        <div id="calcDiv">
-            <script>
-                (async () => {
-                    //pgs23 = await import('http://127.0.0.1:5501/main.js')
-                    //pgs23 = await import(location.href+'/export.js')
-                    pgs23 = await import('https://episphere.github.io/diseasome/main.js')
-                    pgs23.ui()
-                })()
-            </script>
-        </div>
-    </section>
+    <!--  run calc for scores --------------------------->
+    <div id="pgsDiv"></div>
 
+    <!-- calc section----------------------------------------------->
+        <div id="calcDiv">
+        
+        </div>
+
+    <script src="app/calc.js"></script>
 
     <script type="module" src="input2.js"></script>
     <script type="module" src="./input.js"></script>
