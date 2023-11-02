@@ -171,10 +171,11 @@ pgs.Match2=async(data, progressReport)=>{
 
 pgs.loadScore=async(entry='PGS000004',build=37,range)=>{
     let txt = ""
-    if(typeof(entry)=='number'){
-        entry = entry.toString()
+    
         entry = "PGS000000".slice(0,-entry.length)+entry
-    }
+        console.log("pgs.js entry not number ", entry)
+
+    console.log("pgs.js entry ", entry)
     //console.log(entry)
     // https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/PGS000004/ScoringFiles/Harmonized/PGS000004_hmPOS_GRCh37.txt.gz
     const url = `https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/${entry}/ScoringFiles/Harmonized/${entry}_hmPOS_GRCh${build}.txt.gz`//
@@ -220,13 +221,12 @@ pgs.getArrayBuffer=async(range=[0,1000],url='https://ftp.ncbi.nih.gov/snp/organi
 }
 
 // create PGS obj and data
-pgs.parsePGS=async(i = 4)=>{
+pgs.parsePGS=async(id, txt)=>{
     console.log("parsePGS***********************")
     let obj = {
-        id: i
+        id: id
     }
-    obj.txt = await pgs.loadScore(i)
-    console.log("obj.txt",obj.txt)
+    obj.txt = txt
     let rows = obj.txt.split(/[\r\n]/g)
     let metaL = rows.filter(r => (r[0] == '#')).length
     obj.meta = {

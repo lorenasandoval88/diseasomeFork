@@ -82,7 +82,7 @@
     <!--  input to select pgs trait ------------------------------>
     <form>
         <h5>Select trait of interest</h5>
-        <select id="myTrait2">
+        <select id="myTrait">
             <option>--Selelct trait from dropdown--</option>
         </select>
     </form>
@@ -101,19 +101,38 @@
     </form>
     <br>
 
+    <!--  input to select pgs trait ------------------------------>
+    <!-- <form>
+        <h5>Select 23andMe file</h5>
+        <select id="my23File">
+            <option>--Selelct 23andMe from dropdown--</option>
+        </select>
+    </form>
+    <br> -->
+
+    <!-- calc div----------------------------------------------->
+    <h5>Select 23andMe file</h5>
+
+      <div id="my23Div">
+    </div>
+
+
     <!--  run calc for scores --------------------------->
     <div id="pgsDiv"></div>
 
-    <!-- calc section----------------------------------------------->
-        <div id="calcDiv">
-        
-        </div>
 
-    <script src="app/calc.js"></script>
+    <!-- calc div----------------------------------------------->
+    <div id="calcDiv">
+    </div>
 
+    <!-- scripts----------------------------------------------->
+    <script type="module" src="app/data.js"></script>
+
+    <script type="module" src="app/calc.js"></script>
     <script type="module" src="input2.js"></script>
-    <script type="module" src="./input.js"></script>
     <script type="module" src="sdk/allTraits.js"></script>
+    <script type="module" src="sdk/openSnp.js"></script>
+
     <script type="module" src="sdk/oneTrait.js"></script>
     <script type="module" src="main.js"></script>
     <script type="module" src="dependencies.js"></script>
