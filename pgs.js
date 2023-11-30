@@ -1,7 +1,7 @@
-console.log("-------------------")
-console.log("pgs.js loaded")
-import {pako, plotly} from "./dependencies.js";
-
+import plotly from 'https://cdn.jsdelivr.net/npm/plotly.js-dist/+esm';
+import pako from 'https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.esm.mjs'
+import localforage from 'https://cdn.skypack.dev/localforage';
+import *as JSZip from 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.9.1/jszip.min.js'; 
 
 
 let pgs = {date:Date()}
@@ -69,13 +69,19 @@ pgs.plotAllMatchByPos=(data,div2)=>{
 
 pgs.Match2=async(data, progressReport)=>{
     // extract harmonized data from PGS entry first
-    const indChr = data.pgs.cols.indexOf('hm_chr')
-    const indPos = data.pgs.cols.indexOf('hm_pos')
-    // match
-    let dtMatch = []
-    const cgrInd = data.pgs.cols.indexOf('hm_chr')
-    const posInd = data.pgs.cols.indexOf('hm_pos')
+  // extract harmonized data from PGS entry first
+  const indChr = data.pgs.cols.indexOf('hm_chr')
+  const indPos = data.pgs.cols.indexOf('hm_pos')
+  const indOther_allele = data.pgs.cols.indexOf('other_allele')
+  const indEffect_allele = data.pgs.cols.indexOf('effect_allele')
+  const indGenotype = data.my23.cols.indexOf('genotype')
+
+      // match
+      let dtMatch = []
+
     const n = data.pgs.dt.length
+    //console.log(data.pgs.id,"n", n)
+
     //let progressCalc = document.getElementById('progressCalc')
     //progressCalc.hidden = false
     let i = 0
@@ -83,18 +89,21 @@ pgs.Match2=async(data, progressReport)=>{
     //let matchFloor=0 // to advance the earliest match as it advances
     function funMatch(i = 0, matchFloor = 0) {
         if (i < n) {
-            let r = data.pgs.dt[i] //  PGS data to be matched
-            console.log("line 263---, r:",i, r)
+              let r = data.pgs.dt[i]
+
+            //also filter 23 and me variants if they don't match pgs alt or effect allele 
+            let regexPattern = new RegExp([r[indEffect_allele], r[indOther_allele]].join('|'))
 
             if (dtMatch.length > 0) {
                 matchFloor = dtMatch.at(-1)[0][4]
+                //console.log(matchFloor)
             }
-            // MATCH 23andme chromosome and position TO PGS chromosome and position *******
-            var regexPattern = new RegExp([r[2],r[3]].join('|'))
+            let dtMatch_i = data.my23.dt.filter(myr => (myr[2] == r[indPos]))
+                .filter(myr => (myr[1] == r[indChr]))
+            // remove 23 variants that don't match pgs effect or other allele    
+                .filter(myr => regexPattern.test(myr[indGenotype])) 
+            //let dtMatch_i = data.my23.dt.slice(matchFloor).filter(myr=>(myr[2] == r[indPos])).filter(myr=>(myr[1] == r[indChr]))
 
-            let dtMatch_i = data.my23.dt.filter(myr => (myr[2] == r[indPos])).
-                            filter(myr => (myr[1] == r[indChr])).
-                            filter(myr => regexPattern.test(myr[3]))//also filter by pgs alt or effect allele match			//let dtMatch_i = data.my23.dt.slice(matchFloor).filter(myr=>(myr[2] == r[indPos])).filter(myr=>(myr[1] == r[indChr]))
 
             if (dtMatch_i.length > 0) {
                 dtMatch.push(dtMatch_i.concat([r]))
@@ -104,21 +113,17 @@ pgs.Match2=async(data, progressReport)=>{
                 funMatch(i + 1)
             }, 0)
         } else {
-            let calcRiskScore = []
-            let aleles = []
             data.pgsMatchMy23 = dtMatch
-      
+            let calcRiskScore = []
+            let alleles = []
             // calculate Risk
             let logR = 0
             // log(0)=1
-            let ind_effect_allele = data.pgs.cols.indexOf('effect_allele')
-            let ind_other_allele = data.pgs.cols.indexOf('other_allele')
             let ind_effect_weight = data.pgs.cols.indexOf('effect_weight')
-            let ind_allelefrequency_effect = data.pgs.cols.indexOf('allelefrequency_effect')
             dtMatch.forEach((m, i) => {
                 calcRiskScore[i] = 0
                 // default no risk
-                aleles[i] = 0
+                alleles[i] = 0
                 // default no alele
                 let mi = m[0][3].match(/^[ACGT]{2}$/)
                 // we'll only consider duplets in the 23adme report
@@ -128,41 +133,41 @@ pgs.Match2=async(data, progressReport)=>{
                     // 23andme match
                     let pi = m.at(-1)
                     //pgs match
-                    let alele = pi[ind_effect_allele]
+                    let alele = pi[indEffect_allele]
                     let L = mi.match(RegExp(alele, 'g'))
                     // how many, 0,1, or 2
                     if (L) {
                         L = L.length
                         calcRiskScore[i] = L * pi[ind_effect_weight]
-                        aleles[i] = L
+                        alleles[i] = L
                     }
                 }
             })
-            data.aleles = aleles
+            data.alleles = alleles
             data.calcRiskScore = calcRiskScore
-            if (calcRiskScore.reduce((a, b) => Math.min(a, b)) == 0) { //&&(calcRiskScore.reduce((a,b)=>Math.max(a,b))<=1)){ // hazard ratios?
-                console.log('these are not betas :-(')
-                //document.getElementById('my23CalcTextArea').value += ` Found ${data.pgsMatchMy23.length} PGS matches to the 23andme report.`
-    
-                //document.getElementById('my23CalcTextArea').value += ` However, these don't look right, QAQC FAILED ! ... You could look for another entry for the same trait where betas pass QAQC, maybe give it a try at https://www.pgscatalog.org/search/?q=${data.pgs.meta.trait_mapped.replace(' ','+')}.`
-                //document.getElementById('plotRiskDiv').hidden = true
-               // document.getElementById('hidenCalc').hidden = false
-                //plotHazardAllMatchByPos()
-                //plotHazardAllMatchByEffect()
-                //plotAllMatchByEffect()
-            } else {
+            let weight_idx = data.pgs.cols.indexOf('effect_weight')
+            let weights = data.pgs.dt.map(row => row[weight_idx])
+            // warning: no matches found!
+            if (calcRiskScore.length == 0) { 
+                data.PRS = "there are no matches :-("
+                data.QC = false
+                data.QCtext = 'there are no matches :-('
+                //console.log('there are no matches :-(',data.PRS)
+            }else if (calcRiskScore.reduce((a, b) => Math.max(a, b)) > 100) { //&&(calcRiskScore.reduce((a,b)=>Math.max(a,b))<=1)){ // hazard ratios?
                 data.PRS = Math.exp(calcRiskScore.reduce((a, b) => a + b))
-                //document.getElementById('my23CalcTextArea').value += ` Polygenic Risk Score (PRS) = ${Math.round(data.PRS * 1000) / 1000}, calculated from ${data.pgsMatchMy23.length}/${data.dt.length} matches.`
-                //my23CalcTextArea.value+=` ${data.pgsMatchMy23.length} PGS matches to the 23andme report.`
-              //document.getElementById('plotRiskDiv').hidden = false
-                //document.getElementById('hidenCalc').hidden = false
-                //ploting
-                // plotAllMatchByPos()
-                // plotAllMatchByEffect()
-                // plotSummarySnps()
+		        data.QC = false
+                data.QCtext = 'these are large betas :-('
+                //console.log('these are large betas :-(',weights)
+            } else if (weights.reduce((a, b) => Math.min(a, b)) > -0.00002 ) {
+                data.PRS = Math.exp(calcRiskScore.reduce((a, b) => a + b))
+                data.QC = false
+                data.QCtext = 'these are not betas :-('
+                //console.log('these are not betas :-(',weights) 
+            }  else{
+                data.PRS = Math.exp(calcRiskScore.reduce((a, b) => a + b))
+                data.QC = true
+                data.QCtext = ''
             }
-           // document.querySelector('#buttonCalculateRisk').disabled = false
-          // document.querySelector('#buttonCalculateRisk').style.color = 'blue'
         }
     }
     funMatch()
@@ -173,10 +178,8 @@ pgs.loadScore=async(entry='PGS000004',build=37,range)=>{
     let txt = ""
     
         entry = "PGS000000".slice(0,-entry.length)+entry
-        console.log("pgs.js entry not number ", entry)
 
-    console.log("pgs.js entry ", entry)
-    //console.log(entry)
+    ////console.log(entry)
     // https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/PGS000004/ScoringFiles/Harmonized/PGS000004_hmPOS_GRCh37.txt.gz
     const url = `https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/${entry}/ScoringFiles/Harmonized/${entry}_hmPOS_GRCh${build}.txt.gz`//
  
@@ -202,7 +205,7 @@ pgs.loadScore=async(entry='PGS000004',build=37,range)=>{
        let response
        response = await fetch(url) // testing url 'https://httpbin.org/status/429'
        if (response?.ok) {
-           //console.log('Use the response here!');
+           ////console.log('Use the response here!');
          } else {
         txt = `:( Error loading PGS file. HTTP Response Code: ${response?.status}`
         document.getElementById('pgsTextArea').value = txt
@@ -222,7 +225,6 @@ pgs.getArrayBuffer=async(range=[0,1000],url='https://ftp.ncbi.nih.gov/snp/organi
 
 // create PGS obj and data
 pgs.parsePGS=async(id, txt)=>{
-    console.log("parsePGS***********************")
     let obj = {
         id: id
     }
@@ -368,14 +370,14 @@ pgs.parse=async(txt)=>{
                 y[parm][av[0]]=av[1]
             }
 
-            //console.log(i,arr[i])
+            ////console.log(i,arr[i])
         }
         else{
-            //console.log(i)
+            ////console.log(i)
             break
         }
     }
-    //console.log(i,arr[i])
+    ////console.log(i,arr[i])
     y.fields = arr[i].split(/\t/g) // list
     y.values = arr.slice(i+1).map(x=>x.split(/\t/g).map(xi=>parseFloat(xi)?parseFloat(xi):xi))
     return y
