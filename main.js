@@ -62,7 +62,7 @@ function getPrsOneUser(allPgs, one23) {
         let arr2 = {}
         let PRS =  getPrsOneUser(allPgs,all23[i])
         arr2["PRS"] = PRS
-        arr2["my23Txt"] = all23[i]
+        //arr2["my23Txt"] = all23[i]
 
         arr.push(arr2)
    }
@@ -70,9 +70,16 @@ function getPrsOneUser(allPgs, one23) {
 }
 // Get PRS results and filter those that pass QC ---------------------------------
 //let PRS = getPrsOneUser(PGStexts.slice(30, 31),my23Txts[0])
-let PRS = getPrsManyUsers(PGStexts.slice(30, 32),my23Txts)
+let PGS = PGStexts.slice(30, 32)
+let PRS = getPrsManyUsers(PGS,my23Txts)
+let my23 = my23Txts
 
 var filtered_PRS = 
 PRS.filter( x =>  (x.PRS).every( el => el.QC ===true)
 )
-  console.log("filtered_PRS", PRS)
+
+results["PRS"] = filtered_PRS
+results["PGS"] = PGS
+results["my23"] = my23Txts
+
+  console.log("results", results)
