@@ -29,7 +29,7 @@ let PGSids = await getPGSidsForOneTrait(trait, traits, pgsCatalog.traitFiles, pg
 console.log("PGSids",PGSids)
 
 let PGStexts = await getPGSTxts(PGSids.Ids)
-let PGS = PGStexts.slice(45,50)
+let PGS = PGStexts.slice(45,48)
 console.log("PGStexts",PGS)
 
 // get 23 and me users, removing thise that don't pass QC
