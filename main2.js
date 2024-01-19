@@ -1,5 +1,5 @@
 import {get23,getUserUrls,filterUrls} from "./get23.js"
-import { parsePGS, loadScore, getPGSTxts, getScoreFiles, getPGSbyTrait,
+import { parsePGS, loadScore, getPGSTxts, getScoreFiles, getPGSbyTrait2,getPGSbyTrait,
     fetchAll2, getPGSidsForAllTraits, getPGSidsForOneTrait} from "./getPgs.js"
 import {  Match2 } from "./match.js"
 console.log("main.js")
@@ -29,9 +29,9 @@ let varMax = 150
 let traitData = await getPGSidsForAllTraits(traits, pgsCatalog.traitFiles,pgsCatalog.scoringFiles)
 
 let PGSids = await getPGSidsForOneTrait(traitData,trait, varMin, varMax)
-console.log("PGSids",PGSids)
+console.log("PGSids",PGSids[trait].map(x=>x.id))
 
-let PGStexts = await getPGSTxts(PGSids.Ids)
+let PGStexts = await getPGSTxts(PGSids[trait].map(x=>x.id))
 let PGS = PGStexts.slice(45,50)
 console.log("PGStexts",PGS)
 

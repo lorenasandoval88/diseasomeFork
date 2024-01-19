@@ -140,8 +140,39 @@ async function getPGSbyTrait(trait, traitFiles,scoringFiles) {
     let traitFilesArr = []
     let pgsIds = []
      // get trait files that match selected trait from drop down
+     // todo: fix to include one or more strings
     traitFiles.map(tfile => {
         if (trait.includes(tfile["trait_categories"][0])) {
+         //   console.log("tfile[trait_categories]",tfile["trait_categories"])
+            traitFilesArr.push(tfile)
+        }
+    })
+    if (traitFilesArr.length != 0) {
+        pgsIds.push(traitFilesArr.flatMap(x => x.associated_pgs_ids).sort().filter((v, i) => traitFilesArr.flatMap(x => x.associated_pgs_ids).sort().indexOf(v) == i))
+    }
+    let pgsIds2 = pgsIds.flatMap(x => x)
+    let pgsInfo = pgsIds2.map(id=> { // pgs variant number info
+    let result = scoringFiles.filter(obj => {
+        return obj.id === id
+      })
+      return result[0]
+    })
+
+    let obj = {}
+    obj["traitCategory"] = trait
+    obj["count"] = pgsIds2.length
+    obj["pgsIds"] = pgsIds2
+    obj["pgsInfo"] = pgsInfo
+    obj["traitFiles"] = traitFilesArr
+    return obj
+}
+
+async function getPGSbyTrait2(trait, traitFiles,scoringFiles) {
+    let traitFilesArr = []
+    let pgsIds = []
+     // get trait files that match selected trait from drop down
+    traitFiles.map(tfile => {
+        if (trait.includes(tfile["label"][0])) {
             traitFilesArr.push(tfile)
         }
     })
@@ -169,7 +200,7 @@ async function getPGSbyTrait(trait, traitFiles,scoringFiles) {
     let obj = {}
     traits.map(async x => {
       //console.log("trait",x)
-        let res =   getPGSbyTrait(x, traitFiles,scoringFiles) 
+        let res =   getPGSbyTrait2(x, traitFiles,scoringFiles) 
         res.then((res) => {
             obj[x] = res;
             //console.log("res",res)
@@ -216,6 +247,8 @@ export{
     fetchAll2,
     getScoreFiles,
     getPGSbyTrait,
+    getPGSbyTrait2,
     getPGSidsForAllTraits,
-    getPGSidsForOneTrait
+    getPGSidsForOneTrait,
+    
 }
