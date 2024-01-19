@@ -23,11 +23,12 @@ console.log("traits", traits)
 
 let trait = "Cancer"
 console.log("trait", trait)
-
+let varMin = 50
+let varMax = 150
 /// get pgs ids for one trait (cancer)
 let traitData = await getPGSidsForAllTraits(traits, pgsCatalog.traitFiles,pgsCatalog.scoringFiles)
 
-let PGSids = await getPGSidsForOneTrait(traitData,trait, traits, pgsCatalog.traitFiles, pgsCatalog.scoringFiles)
+let PGSids = await getPGSidsForOneTrait(traitData,trait, varMin, varMax)
 console.log("PGSids",PGSids)
 
 let PGStexts = await getPGSTxts(PGSids.Ids)
