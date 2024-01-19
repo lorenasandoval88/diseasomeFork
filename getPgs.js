@@ -179,9 +179,11 @@ async function getPGSbyTrait(trait, traitFiles,scoringFiles) {
 }
 async function getPGSidsForOneTrait(traitData,trait,traits, traitFiles,scoringFiles) {
     let obj = {}
+    // filter ids that don't have variant number/info
     console.log("traitData[trait].pgsInfo",traitData[trait].pgsInfo)
-
-    let traitData2 = traitData[trait].pgsInfo
+let traitData1 =  traitData[trait].pgsInfo.filter(x=> x!= undefined)
+    let traitData2 = traitData1[trait].pgsInfo
+            .filter(x=> x.id!= undefined)
             .filter( x =>  x.variants_number < 1000 & x.variants_number > 120)
             .map( x => x.id)
     obj["Ids"] = traitData2
