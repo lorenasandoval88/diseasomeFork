@@ -113,5 +113,6 @@ async function get23(urls) {
 export {
     getUserUrls,
     get23,
+    parse23,
     filterUrls
 }
