@@ -177,8 +177,7 @@ async function getPGSbyTrait(trait, traitFiles,scoringFiles) {
     })
     return obj
 }
-async function getPGSidsForOneTrait(trait,traits, traitFiles,scoringFiles) {
-    let traitData = await getPGSidsForAllTraits(traits, traitFiles,scoringFiles)
+async function getPGSidsForOneTrait(traitData,trait,traits, traitFiles,scoringFiles) {
     let obj = {}
     let traitData2 = traitData[trait].pgsInfo
             .filter( x =>  x.variants_number < 1000 & x.variants_number > 120)

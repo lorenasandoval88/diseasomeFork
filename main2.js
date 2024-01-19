@@ -19,13 +19,15 @@ pgsCatalog.scoringFiles = (await fetchAll2('https://corsproxy.io/?https://www.pg
 //---------------------------------------------------------------
 // make traits and subset scoring files by trait
 let traits = Array.from(new Set(pgsCatalog.traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
-//console.log("traits", traits)
+console.log("traits", traits)
 
 let trait = "Cancer"
 console.log("trait", trait)
 
 /// get pgs ids for one trait (cancer)
-let PGSids = await getPGSidsForOneTrait(trait, traits, pgsCatalog.traitFiles, pgsCatalog.scoringFiles)
+let traitData = await getPGSidsForAllTraits(traits, pgsCatalog.traitFiles,pgsCatalog.scoringFiles)
+
+let PGSids = await getPGSidsForOneTrait(traitData,trait, traits, pgsCatalog.traitFiles, pgsCatalog.scoringFiles)
 console.log("PGSids",PGSids)
 
 let PGStexts = await getPGSTxts(PGSids.Ids)
