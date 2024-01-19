@@ -186,7 +186,7 @@ async function getPGSidsForOneTrait(traitData,trait, varMin, varMax) {
             .filter( x =>  x.variants_number < varMax & x.variants_number > varMin)
             .map( x => x.id)
     obj["Ids"] = traitData2
-    obj["allTraits"] = traitData
+    //obj["allTraits"] = traitData
     return obj
 }
 // Get pgs scores in text format----------------------------------------
