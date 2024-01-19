@@ -184,8 +184,8 @@ async function getPGSidsForOneTrait(traitData,trait, varMin, varMax) {
     let traitData2 = traitData[trait].pgsInfo
             .filter(x=> x!= undefined)
             .filter( x =>  x.variants_number < varMax & x.variants_number > varMin)
-            .map( x => x.id)
-    obj["Ids"] = traitData2
+           // .map( x => x.id)
+    obj[trait] = traitData2
     //obj["allTraits"] = traitData
     return obj
 }
