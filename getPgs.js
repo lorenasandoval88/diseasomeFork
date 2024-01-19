@@ -180,7 +180,7 @@ async function getPGSbyTrait(trait, traitFiles,scoringFiles) {
 async function getPGSidsForOneTrait(traitData,trait, varMin, varMax) {
     let obj = {}
     // filter ids that don't have variant number/info
-
+    console.log("var min and max: ",varMin, varMax)
     let traitData2 = traitData[trait].pgsInfo
             .filter(x=> x!= undefined)
             .filter( x =>  x.variants_number < varMax & x.variants_number > varMin)
