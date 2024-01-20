@@ -34,7 +34,6 @@ export {
     loadScore,
     fetchAll2,
     getOneCategory,
-    getCategories,
     getPGSidsForOneCategory,
     getPGSidsForOneTrait,
     //match
