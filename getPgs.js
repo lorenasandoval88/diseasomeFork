@@ -170,6 +170,8 @@ async function getPGSbyTrait(trait, traitFiles,scoringFiles) {
 async function getPGSbyTrait2(trait, traitFiles,scoringFiles) {
     let traitFilesArr = []
     let pgsIds = []
+    console.log("trait", trait)
+
      // get trait files that match selected trait from drop down
     traitFiles.map(tfile => {
         if (trait.includes(tfile["label"][0])) {
