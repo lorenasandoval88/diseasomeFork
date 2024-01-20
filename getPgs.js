@@ -130,8 +130,8 @@ async function fetchAll2(url, maxPolls = null) {
 
 // 1.
 // get all trait categories and info
-async function getCategories(traitCategories, traitFiles, scoringFiles) {
-    console.log("getCategories**********")
+async function getCategoriesData(traitCategories, traitFiles, scoringFiles) {
+    console.log("getCategoriesData**********")
     let obj = {}
     traitCategories.map(async x => {
         //console.log("one cat",x)
@@ -174,8 +174,10 @@ async function getOneCategory(traitCategory, traitFiles, scoringFiles) {
 
 
 // subset one category by variant number
-async function getPGSidsForOneCategory(traitCategories, traitCategory, varMin, varMax) {
-    let obj = {}
+async function getPGSidsForOneCategory( traitCategory, varMin, varMax,traitFiles, scoringFiles) {
+    let categories = Array.from(new Set(traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
+
+    let traitCategories = await getCategoriesData(categories, traitFiles, scoringFiles)
     // filter ids that don't have variant number/info
     console.log("getPGSidsForOneCategory-----------")
     console.log("Category:", traitCategory)
@@ -228,7 +230,7 @@ export {
     loadScore,
     fetchAll2,
     getOneCategory,
-    getCategories,
+    getCategoriesData,
     getPGSidsForOneCategory,
     getPGSidsForOneTrait
 
