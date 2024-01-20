@@ -12,7 +12,6 @@ import {
     loadScore,
     fetchAll2,
     getOneCategory,
-    getCategories,
     getPGSidsForOneCategory,
     getPGSidsForOneTrait
 } from "./getPgs.js"
