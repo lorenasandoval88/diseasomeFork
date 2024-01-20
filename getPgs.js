@@ -170,7 +170,6 @@ async function getPGSbyTrait(trait, traitFiles,scoringFiles) {
 async function getPGSbyTrait2(trait, traitFiles,scoringFiles) {
     let traitFilesArr = []
     let pgsIds = []
-    console.log("trait", trait)
 
      // get trait files that match selected trait from drop down
     traitFiles.map(tfile => {
@@ -213,6 +212,8 @@ async function getPGSbyTrait2(trait, traitFiles,scoringFiles) {
 async function getPGSidsForOneTrait(traitData,trait, varMin, varMax) {
     let obj = {}
     // filter ids that don't have variant number/info
+    console.log("trait", trait)
+
     console.log("var min and max: ",varMin, varMax)
     let traitData2 = traitData[trait].pgsInfo
             .filter(x=> x!= undefined)
