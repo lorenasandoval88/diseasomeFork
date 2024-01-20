@@ -1,7 +1,6 @@
 import {get23,getUserUrls,filterUrls} from "./get23.js"
 import { parsePGS, loadScore, getPGSTxts, 
-     getOneCategory,
-    fetchAll2, getCategoriesData, getPGSidsForOneCategory,getPGSidsForOneTrait} from "./getPgs.js"
+     getOneCategory,   fetchAll2, getPGSidsForOneCategory,getPGSidsForOneTrait} from "./getPgs.js"
 import {  Match2 } from "./match.js"
 console.log("main.js")
 
@@ -31,7 +30,7 @@ let trait = "type 2 diabetes mellitus"
 let traitResults = await getPGSidsForOneTrait(traitFiles,scoringFiles,trait, varMin, varMax)
 console.log("traitResults",traitResults)
 //----------------------------------------------------------------------
-let categoryData = await getCategoriesData(categories, traitFiles,scoringFiles)
+//let categoryData = await getCategoriesData(categories, traitFiles,scoringFiles)
 let categoryResults = await getPGSidsForOneCategory(traitCategory, varMin, varMax,traitFiles, scoringFiles)
 console.log("categoryResults",categoryResults)//.map(x=>x.id))//PGSids[trait].map(x=>x.id))
 
