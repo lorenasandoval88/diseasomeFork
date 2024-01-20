@@ -1,6 +1,7 @@
 import {get23,getUserUrls,filterUrls} from "./get23.js"
-import { parsePGS, loadScore, getPGSTxts, getScoreFiles, getPGSbyTrait2,getPGSbyTrait,
-    fetchAll2, getPGSidsForAllTraits, getPGSidsForOneTrait} from "./getPgs.js"
+import { parsePGS, loadScore, getPGSTxts, 
+     getOneCategory,
+    fetchAll2, getCategories, getPGSidsForOneCategory,getPGSidsForOneTrait} from "./getPgs.js"
 import {  Match2 } from "./match.js"
 console.log("main.js")
 
@@ -11,29 +12,32 @@ console.log("main.js")
 let users = await filterUrls()
 let userUrls = (users.slice(0,8)).map(x => x["genotype.download_url"])
 console.log("userUrls", userUrls)
-let pgsCatalog = {}
 
 // save all trait files and score file metadata in local storage
-pgsCatalog.traitFiles = (await fetchAll2('https://www.pgscatalog.org/rest/trait/all')).flatMap(x => x)
-pgsCatalog.scoringFiles = (await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')).flatMap(x => x)
+let traitFiles = (await fetchAll2('https://www.pgscatalog.org/rest/trait/all')).flatMap(x => x)
+let scoringFiles = (await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')).flatMap(x => x)
+
 //---------------------------------------------------------------
 // make traits and subset scoring files by trait
-let traits = Array.from(new Set(pgsCatalog.traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
-console.log("traits", traits)
+let categories = Array.from(new Set(traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
+console.log("traits", categories)
 
-let trait = "Cancer"
-console.log("trait", trait)
+let traitCategory = "Cancer"
+console.log("traitCategory", traitCategory)
 let varMin = 50
 let varMax = 150
 /// get pgs ids for one trait (cancer)
-let traitData = await getPGSidsForAllTraits(traits, pgsCatalog.traitFiles,pgsCatalog.scoringFiles)
+let trait = "type 2 diabetes mellitus"
+let traitResults = await getPGSidsForOneTrait(traitFiles,scoringFiles,trait, varMin, varMax)
+console.log("traitResults",traitResults)
+//----------------------------------------------------------------------
+let categoryData = await getCategories(categories, traitFiles,scoringFiles)
+let categoryResults = await getPGSidsForOneCategory(categoryData,traitCategory, varMin, varMax)
+console.log("categoryResults",categoryResults)//.map(x=>x.id))//PGSids[trait].map(x=>x.id))
 
-let PGSids = await getPGSidsForOneTrait(traitData,trait, varMin, varMax)
-console.log("PGSids",PGSids[trait].map(x=>x.id))
-
-let PGStexts = await getPGSTxts(PGSids[trait].map(x=>x.id))
-let PGS = PGStexts.slice(45,50)
-console.log("PGStexts",PGS)
+let PGStexts = await getPGSTxts(categoryResults.map(x=>x.id))//PGSids[trait].map(x=>x.id))
+let PGS = PGStexts.slice(1,2)
+console.log("PGStexts",PGStexts)
 
 // get 23 and me users, removing thise that don't pass QC
 let { my23Txts } = await get23(userUrls)
@@ -63,11 +67,11 @@ function PRS_fun(matrix){
 let data = {}
 
 data["PGS"] = PGS
-data["my23"] = my23Txts
-let PRS = PRS_fun(data)
-data["PRS"] = PRS
+//data["my23"] = my23Txts
+//let PRS = PRS_fun(data)
+//data["PRS"] = PRS
 
-console.log("data",data )
+//console.log("data",data )
 
 
 

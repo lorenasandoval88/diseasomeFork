@@ -5,14 +5,16 @@ import {getUserUrls,
     get23
 } from "./get23.js"
 
-import {parsePGS,
+import {
+    searchTraits,
+    getPGSTxts,
+    parsePGS,
     loadScore,
-    getScoreFiles,
     fetchAll2,
-    getPGSbyTrait,
-    getPGSidsForAllTraits,
-    getPGSidsForOneTrait,
-    getPGSTxts
+    getOneCategory,
+    getCategories,
+    getPGSidsForOneCategory,
+    getPGSidsForOneTrait
 } from "./getPgs.js"
 
 import {
@@ -26,14 +28,15 @@ export {
     parse23,
     get23,
     //pgs
+    searchTraits,
+    getPGSTxts,
     parsePGS,
     loadScore,
-    getScoreFiles,
     fetchAll2,
-    getPGSbyTrait,
-    getPGSidsForAllTraits,
+    getOneCategory,
+    getCategories,
+    getPGSidsForOneCategory,
     getPGSidsForOneTrait,
-    getPGSTxts,
     //match
     Match2,
 } 
