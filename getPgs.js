@@ -13,7 +13,7 @@ let scoresTxtDb = localforage.createInstance({
 //---------------------------------------
 // search for traits by different parameters
 function searchTraits(traitFiles){
-    obj = {}
+    let obj = {}
     obj["traitIds"] = traitFiles.map( x => x.id)
     obj["traitLabels"] = traitFiles.map( x => x.label)
     obj["traitCategories"] = Array.from(new Set(traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
