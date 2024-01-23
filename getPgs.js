@@ -231,8 +231,12 @@ function getPGSIds(traitType, trait, traitFiles, scoringFiles, varMin, varMax){
     if (traitType == "traitLabels") {
             getPGSidsForOneTraitLabel(traitFiles, scoringFiles, trait, varMin, varMax) 
         } else if(traitType == "traitCategories") {
+            console.log("traitCategories!")
+
             getPGSidsForOneTraitCategory( trait,traitFiles, scoringFiles, varMin, varMax,)
         } else if(traitType == "traitIds") {
+            console.log("traitIds!")
+
             getPGSidsForOneTraitId( trait, traitFiles, scoringFiles, varMin, varMax)
         } else {
             console.log("invalid trait type!")
