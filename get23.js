@@ -103,10 +103,10 @@ async function get23(urls) {
             //console.log("ERROR:This is NOT a valid 23andMe file:", user.substring(0, 37))
         }
     }
-    data["my23Txts"]  =  arr23Txts
-    data["my23Urls"]  =arrUrls
-
-    return data
+    // data["my23Txts"]  =  arr23Txts
+    // data["my23Urls"]  =arrUrls
+    // return data
+    return arr23Txts
 }
 
 

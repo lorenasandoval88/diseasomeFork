@@ -47,7 +47,8 @@ console.log("PGStexts",PGStexts)
 // console.log("PGStexts",PGStexts)
 
 // get 23 and me users, removing thise that don't pass QC
-let { my23Txts } = await get23(userUrls)
+//let { my23Txts } = await get23(userUrls)
+let my23Txts = await get23(userUrls)
 console.log("my23Txts", my23Txts)
 
 
