@@ -228,21 +228,23 @@ async function getPGSidsForOneTraitId( trait, traitFiles, scoringFiles, varMin, 
 // 3. 
 
 async function getPGSIds(traitType, trait, traitFiles, scoringFiles, varMin, varMax){
-    if (traitType == "traitLabels") {
-        console.log("traitCategories!")
-        let res = await getPGSidsForOneTraitLabel(trait,traitFiles, scoringFiles, varMin, varMax) 
+    let res = ""
+        if (traitType == "traitLabels") {
+            console.log("traitCategories!")
+            res = await getPGSidsForOneTraitLabel(trait,traitFiles, scoringFiles, varMin, varMax) 
 
         } else if(traitType == "traitCategories") {
             console.log("traitCategories!")
-            let res = await  getPGSidsForOneTraitCategory( trait,traitFiles, scoringFiles, varMin, varMax,)
+            res = await  getPGSidsForOneTraitCategory( trait,traitFiles, scoringFiles, varMin, varMax,)
 
         } else if(traitType == "traitIds") {
             console.log("traitIds!")
-            let res = await  getPGSidsForOneTraitId( trait, traitFiles, scoringFiles, varMin, varMax)
+            res = await  getPGSidsForOneTraitId( trait, traitFiles, scoringFiles, varMin, varMax)
         } else {
-            let res = "no trait type"
+            res = "no trait type"
             console.log("invalid trait type!")
         }
+        console.log("res",res)
         return res
     }
 // Get pgs scores in text format----------------------------------------
