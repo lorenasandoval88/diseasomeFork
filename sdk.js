@@ -20,8 +20,12 @@ import {
 import {
     Match2
 } from "./match.js"
-
+import {
+    PRS_fun
+} from "./main2.js"
 export {
+    //PRS
+    PRS_fun,
     //23andMe
     getUserUrls,
     filterUrls,
