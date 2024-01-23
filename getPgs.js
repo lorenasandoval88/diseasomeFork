@@ -230,9 +230,9 @@ async function getPGSidsForOneTraitId( trait, traitFiles, scoringFiles, varMin, 
 function getPGSIds(traitType, trait, traitFiles, scoringFiles, varMin, varMax){
     if (traitType == "traitLabels") {
             getPGSidsForOneTraitLabel(traitFiles, scoringFiles, trait, varMin, varMax) 
-        } else if(traitType == "traitCategory") {
+        } else if(traitType == "traitCategories") {
             getPGSidsForOneTraitCategory( trait,traitFiles, scoringFiles, varMin, varMax,)
-        } else if(traitType == "traitCategory") {
+        } else if(traitType == "traitIds") {
             getPGSidsForOneTraitId( trait, traitFiles, scoringFiles, varMin, varMax)
         } else {
             console.log("invalid trait type!")
