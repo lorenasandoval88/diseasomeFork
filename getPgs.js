@@ -234,6 +234,8 @@ function getPGSIds(traitType, trait, traitFiles, scoringFiles, varMin, varMax){
             getPGSidsForOneTraitCategory( trait,traitFiles, scoringFiles, varMin, varMax,)
         } else if(traitType == "traitCategory") {
             getPGSidsForOneTraitId( trait, traitFiles, scoringFiles, varMin, varMax)
+        } else {
+            console.log("invalid trait type!")
         }
     }
 // Get pgs scores in text format----------------------------------------
