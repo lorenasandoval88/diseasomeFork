@@ -229,7 +229,7 @@ async function getPGSidsForOneTraitId( trait, traitFiles, scoringFiles, varMin, 
 
 function getPGSIds(traitType, trait, traitFiles, scoringFiles, varMin, varMax){
     if (traitType == "traitLabels") {
-            getPGSidsForOneTraitLabel(traitFiles, scoringFiles, trait, varMin, varMax) 
+            getPGSidsForOneTraitLabel(trait,traitFiles, scoringFiles, varMin, varMax) 
         } else if(traitType == "traitCategories") {
             console.log("traitCategories!")
 
