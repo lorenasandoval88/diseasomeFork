@@ -199,8 +199,6 @@ async function getPGSidsForOneTraitLabel( trait, traitFiles, scoringFiles, varMi
     let ids = traitFiles
         .filter(x => x.label == trait)
         .map(x => x.associated_pgs_ids)[0]
-console.log("ids", ids)
-console.log("scoringFiles", scoringFiles)
 
     let ids2 = scoringFiles
         .filter(x => ids.includes(x.id))

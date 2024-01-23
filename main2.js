@@ -1,6 +1,6 @@
 import {get23,getUserUrls,filterUrls} from "./get23.js"
 import { parsePGS, loadScore, getPGSTxts, 
-     getOneCategory,   fetchAll2,  getPGSidsForOneTraitCategory,
+     getOneCategory, getPGSIds,  fetchAll2,  getPGSidsForOneTraitCategory,
      getPGSidsForOneTraitLabel,} from "./getPgs.js"
 import {  Match2 } from "./match.js"
 console.log("main.js")
@@ -19,25 +19,32 @@ let scoringFiles = (await fetchAll2('https://corsproxy.io/?https://www.pgscatalo
 
 //---------------------------------------------------------------
 // make traits and subset scoring files by trait
-let categories = Array.from(new Set(traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
-console.log("traits", categories)
+// let categories = Array.from(new Set(traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
+// console.log("traits", categories)
 
-let traitCategory = "Cancer"
-console.log("traitCategory", traitCategory)
+// let traitCategory = "Cancer"
+// console.log("traitCategory", traitCategory)
 let varMin = 50
 let varMax = 150
-/// get pgs ids for one trait (cancer)
-let trait = "type 2 diabetes mellitus"
-let traitResults = await getPGSidsForOneTraitLabel(trait, traitFiles,scoringFiles, varMin, varMax)
-console.log("traitResults",traitResults)
+// /// get pgs ids for one trait (cancer)
+// let trait = "type 2 diabetes mellitus"
+// let traitResults = await getPGSidsForOneTraitLabel(trait, traitFiles,scoringFiles, varMin, varMax)
+// console.log("traitResults",traitResults)
 //----------------------------------------------------------------------
 //let categoryData = await getCategoriesData(categories, traitFiles,scoringFiles)
-let categoryResults = await getPGSidsForOneTraitCategory(traitCategory,traitFiles, scoringFiles, varMin, varMax)
-console.log("categoryResults",categoryResults)//.map(x=>x.id))//PGSids[trait].map(x=>x.id))
+// let categoryResults = await getPGSidsForOneTraitCategory(traitCategory,traitFiles, scoringFiles, varMin, varMax)
+// console.log("categoryResults",categoryResults)//.map(x=>x.id))//PGSids[trait].map(x=>x.id))
 
-let PGStexts = await getPGSTxts(categoryResults.map(x=>x.id))//PGSids[trait].map(x=>x.id))
+let label = "type 2 diabetes mellitus"
+let results = await getPGSIds("traitLabels", label, traitFiles, scoringFiles, varMin, varMax)
+console.log("results",results)
+let PGStexts = await getPGSTxts(results.map(x=>x.id))
 let PGS = PGStexts.slice(1,2)
 console.log("PGStexts",PGStexts)
+//---------------------------------------------------
+// let PGStexts = await getPGSTxts(categoryResults.map(x=>x.id))//PGSids[trait].map(x=>x.id))
+// let PGS = PGStexts.slice(1,2)
+// console.log("PGStexts",PGStexts)
 
 // get 23 and me users, removing thise that don't pass QC
 let { my23Txts } = await get23(userUrls)
@@ -67,11 +74,11 @@ function PRS_fun(matrix){
 let data = {}
 
 data["PGS"] = PGS
-//data["my23"] = my23Txts
-//let PRS = PRS_fun(data)
-//data["PRS"] = PRS
+data["my23"] = my23Txts
+let PRS = PRS_fun(data)
+data["PRS"] = PRS
 
-//console.log("data",data )
+console.log("data",data )
 
 
 
