@@ -12,8 +12,9 @@ import {
     loadScore,
     fetchAll2,
     getOneCategory,
-    getPGSidsForOneCategory,
-    getPGSidsForOneTrait
+    getPGSidsForOneTraitCategory,
+    getPGSidsForOneTraitLabel,
+    getPGSIds
 } from "./getPgs.js"
 
 import {
@@ -33,8 +34,9 @@ export {
     loadScore,
     fetchAll2,
     getOneCategory,
-    getPGSidsForOneCategory,
-    getPGSidsForOneTrait,
+    getPGSIds,
+    getPGSidsForOneTraitCategory,
+    getPGSidsForOneTraitLabel,
     //match
     Match2,
 } 

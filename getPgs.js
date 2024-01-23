@@ -127,6 +127,7 @@ async function fetchAll2(url, maxPolls = null) {
 //---------------------------------------------------------------
 // 1. subset ids by traitFile trait_categories and variant number
 // 2. subset ids by traitFile label and variant number
+// 3. get pgs ids based on trait label, catefory or name
 
 // 1.
 // get all trait categories and info
@@ -174,29 +175,47 @@ async function getOneCategory(traitCategory, traitFiles, scoringFiles) {
 
 
 // subset one category by variant number
-async function getPGSidsForOneCategory( traitCategory, varMin, varMax,traitFiles, scoringFiles) {
+async function getPGSidsForOneTraitCategory( category,traitFiles, scoringFiles, varMin, varMax,) {
     let categories = Array.from(new Set(traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
 
     let traitCategories = await getCategoriesData(categories, traitFiles, scoringFiles)
     // filter ids that don't have variant number/info
-    console.log("getPGSidsForOneCategory-----------")
-    console.log("Category:", traitCategory)
+    console.log("getPGSidsForOneTraitCategory-----------")
+    console.log("Category:", category)
     console.log("var min and max: ", varMin, varMax)
-    let traitCategories2 = traitCategories[traitCategory].pgsInfo
+    let traitCategories2 = traitCategories[category].pgsInfo
         // filter ids that don't have variant number/info
         .filter(x => x != undefined)
         .filter(x => x.variants_number < varMax & x.variants_number > varMin)
     return traitCategories2
 }
 //-----------------------------------------------------------------------------------------
-// 2. 
+// 2. label
 
-async function getPGSidsForOneTrait(traitFiles, scoringFiles, trait, varMin, varMax) {
-    console.log("getPGSidsForOneTrait-----------------------")
+async function getPGSidsForOneTraitLabel( trait, traitFiles, scoringFiles, varMin, varMax) {
+    console.log("getPGSidsForOneTraitLabel-----------------------")
     console.log("trait:", trait)
     console.log("var min and max: ", varMin, varMax)
     let ids = traitFiles
         .filter(x => x.label == trait)
+        .map(x => x.associated_pgs_ids)[0]
+console.log("ids", ids)
+console.log("scoringFiles", scoringFiles)
+
+    let ids2 = scoringFiles
+        .filter(x => ids.includes(x.id))
+        .filter(x => x != undefined)
+        .filter(x => x.variants_number < varMax & x.variants_number > varMin)
+    return ids2
+}
+// 2. ids (EFO)
+
+async function getPGSidsForOneTraitId( trait, traitFiles, scoringFiles, varMin, varMax) {
+    console.log("getPGSidsForOneTraiId-----------------------")
+    console.log("trait:", trait)
+    console.log("var min and max: ", varMin, varMax)
+    let ids = traitFiles
+        .filter(x => x.id == trait)
         .map(x => x.associated_pgs_ids)[0]
 
     let ids2 = scoringFiles
@@ -205,6 +224,18 @@ async function getPGSidsForOneTrait(traitFiles, scoringFiles, trait, varMin, var
         .filter(x => x.variants_number < varMax & x.variants_number > varMin)
     return ids2
 }
+//-----------------------------------------------------------------------------------------
+// 3. 
+
+function getPGSIds(traitType, trait, traitFiles, scoringFiles, varMin, varMax){
+    if (traitType == "traitLabels") {
+            getPGSidsForOneTraitLabel(traitFiles, scoringFiles, trait, varMin, varMax) 
+        } else if(traitType == "traitCategory") {
+            getPGSidsForOneTraitCategory( trait,traitFiles, scoringFiles, varMin, varMax,)
+        } else if(traitType == "traitCategory") {
+            getPGSidsForOneTraitId( trait, traitFiles, scoringFiles, varMin, varMax)
+        }
+    }
 // Get pgs scores in text format----------------------------------------
 //Run PGS catalog API calls using pgsIDs and cache
 async function getPGSTxts(ids) {
@@ -231,7 +262,8 @@ export {
     fetchAll2,
     getOneCategory,
     getCategoriesData,
-    getPGSidsForOneCategory,
-    getPGSidsForOneTrait
+    getPGSidsForOneTraitCategory,
+    getPGSidsForOneTraitLabel,
+    getPGSIds
 
 }

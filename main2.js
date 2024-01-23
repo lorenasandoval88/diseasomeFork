@@ -1,6 +1,7 @@
 import {get23,getUserUrls,filterUrls} from "./get23.js"
 import { parsePGS, loadScore, getPGSTxts, 
-     getOneCategory,   fetchAll2, getPGSidsForOneCategory,getPGSidsForOneTrait} from "./getPgs.js"
+     getOneCategory,   fetchAll2,  getPGSidsForOneTraitCategory,
+     getPGSidsForOneTraitLabel,} from "./getPgs.js"
 import {  Match2 } from "./match.js"
 console.log("main.js")
 
@@ -27,11 +28,11 @@ let varMin = 50
 let varMax = 150
 /// get pgs ids for one trait (cancer)
 let trait = "type 2 diabetes mellitus"
-let traitResults = await getPGSidsForOneTrait(traitFiles,scoringFiles,trait, varMin, varMax)
+let traitResults = await getPGSidsForOneTraitLabel(trait, traitFiles,scoringFiles, varMin, varMax)
 console.log("traitResults",traitResults)
 //----------------------------------------------------------------------
 //let categoryData = await getCategoriesData(categories, traitFiles,scoringFiles)
-let categoryResults = await getPGSidsForOneCategory(traitCategory, varMin, varMax,traitFiles, scoringFiles)
+let categoryResults = await getPGSidsForOneTraitCategory(traitCategory,traitFiles, scoringFiles, varMin, varMax)
 console.log("categoryResults",categoryResults)//.map(x=>x.id))//PGSids[trait].map(x=>x.id))
 
 let PGStexts = await getPGSTxts(categoryResults.map(x=>x.id))//PGSids[trait].map(x=>x.id))
