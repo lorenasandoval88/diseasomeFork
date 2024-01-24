@@ -8,6 +8,7 @@ import {getUserUrls,
 import {
     searchTraits,
     getPGSTxts,
+    getPGSTxtsHm,
     parsePGS,
     loadScore,
     fetchAll2,
@@ -34,6 +35,7 @@ export {
     //pgs
     searchTraits,
     getPGSTxts,
+    getPGSTxtsHm,
     parsePGS,
     loadScore,
     fetchAll2,
