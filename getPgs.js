@@ -9,6 +9,10 @@ let scoresTxtDb = localforage.createInstance({
     name: "scoresTxtDb",
     storeName: "scoreFiles"
 })
+let scoresTxtDbHm = localforage.createInstance({
+    name: "scoresTxtDbHm",
+    storeName: "scoreFilesHm"
+})
 
 //---------------------------------------
 // search for traits by different parameters
@@ -282,7 +286,7 @@ async function getPGSIds(traitType, trait, traitFiles, scoringFiles, varMin, var
 //Run PGS catalog API calls using pgsIDs and cache
 async function getPGSTxtsHm(ids) {
     let data = await Promise.all(ids.map(async (id, i) => {
-        let score = await scoresTxtDb.getItem(id)
+        let score = await scoresTxtDbHm.getItem(id)
 
         if (score == null) {
             score = parsePGS(id, await loadScoreHm(id))
