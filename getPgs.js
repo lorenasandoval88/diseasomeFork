@@ -290,7 +290,7 @@ async function getPGSTxtsHm(ids) {
 
         if (score == null) {
             score = parsePGS(id, await loadScoreHm(id))
-            scoresTxtDb.setItem(id, score);
+            scoresTxtDbHm.setItem(id, score);
         }
         return score
     }))
