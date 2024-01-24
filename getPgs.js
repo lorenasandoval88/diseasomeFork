@@ -96,6 +96,39 @@ async function loadScore(entry = 'PGS000004', build = 37, range) {
     }
     return txt
 }
+async function loadScoreHm(entry = 'PGS000004', build = 37, range) {
+    let txt = ""
+    entry = "PGS000000".slice(0, -entry.length) + entry
+    // https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/PGS000004/ScoringFiles/Harmonized/PGS000004_hmPOS_GRCh37.txt.gz
+    const url = `https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/${entry}/ScoringFiles/Harmonized/${entry}_hmPOS_GRCh${build}.txt.gz` //
+    if (range) {
+        if (typeof (range) == 'number') {
+            range = [0, range]
+        }
+        txt = pako.inflate(await (await fetch(url, {
+            headers: {
+                'content-type': 'multipart/byteranges',
+                'range': `bytes=${range.join('-')}`,
+            }
+        })).arrayBuffer(), {
+            to: 'string'
+        })
+    } else {
+        txt = pako.inflate(await (await fetch(url)).arrayBuffer(), {
+            to: 'string'
+        })
+    }
+    // Check if PGS catalog FTP site is down-----------------------
+    let response
+    response = await fetch(url) // testing url 'https://httpbin.org/status/429'
+    if (response?.ok) {
+        ////console.log('Use the response here!');
+    } else {
+        txt = `:( Error loading PGS file. HTTP Response Code: ${response?.status}`
+        document.getElementById('pgsTextArea').value = txt
+    }
+    return txt
+}
 
 //---------------------------------------------------------------
 // get all score and trait files
@@ -247,6 +280,18 @@ async function getPGSIds(traitType, trait, traitFiles, scoringFiles, varMin, var
     }
 // Get pgs scores in text format----------------------------------------
 //Run PGS catalog API calls using pgsIDs and cache
+async function getPGSTxtsHm(ids) {
+    let data = await Promise.all(ids.map(async (id, i) => {
+        let score = await scoresTxtDb.getItem(id)
+
+        if (score == null) {
+            score = parsePGS(id, await loadScoreHm(id))
+            scoresTxtDb.setItem(id, score);
+        }
+        return score
+    }))
+    return data
+}
 async function getPGSTxts(ids) {
     let data = await Promise.all(ids.map(async (id, i) => {
         let score = await scoresTxtDb.getItem(id)
@@ -266,6 +311,7 @@ async function getPGSTxts(ids) {
 export {
     searchTraits,
     getPGSTxts,
+    getPGSTxtsHm,
     parsePGS,
     loadScore,
     fetchAll2,
