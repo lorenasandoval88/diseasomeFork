@@ -26,6 +26,7 @@ function searchTraits(traitFiles){
 
 // create PGS obj and data --------------------------
 async function parsePGS(id, txt) {
+    console.log('parsePGS')
     let obj = {
         id: id
     }
@@ -68,11 +69,14 @@ async function parsePGS(id, txt) {
 }
 
 async function loadScore(entry = 'PGS000004', build = 37, range) {
+    console.log("loadScore")
+
     let txt = ""
     entry = "PGS000000".slice(0, -entry.length) + entry
     // https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/PGS000004/ScoringFiles/Harmonized/PGS000004_hmPOS_GRCh37.txt.gz
-    console.log("url",url)
     const url = `https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/${entry}/ScoringFiles/${entry}.txt.gz` //
+    console.log("url",url)
+
     if (range) {
         if (typeof (range) == 'number') {
             range = [0, range]
@@ -300,14 +304,19 @@ async function getPGSTxtsHm(ids) {
 }
 async function getPGSTxts(ids) {
     let data = await Promise.all(ids.map(async (id, i) => {
-        let score = await scoresTxtDb.getItem(id)
+    //     let score = await scoresTxtDb.getItem(id)
+    //     console.log('getPGSTxts',score)
 
-        if (score == null) {
-            score = parsePGS(id, await loadScore(id))
-            scoresTxtDb.setItem(id, score);
-        }
+    //     if (score == null) {
+    //         score = parsePGS(id, await loadScore(id))
+
+    //         scoresTxtDb.setItem(id, score);
+    //     }
+        let score = parsePGS(id, await loadScore(id))
+
         return score
-    }))
+    })
+    )
     return data
 }
 // traitFiles > ids> scoreFiles

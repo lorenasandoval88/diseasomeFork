@@ -1,5 +1,5 @@
 import {get23,getUserUrls,filterUrls} from "./get23.js"
-import { parsePGS, loadScore, getPGSTxts, 
+import { parsePGS, loadScore, getPGSTxts, getPGSTxtsHm,
      getOneCategory, getPGSIds,  fetchAll2,  getPGSidsForOneTraitCategory,
      getPGSidsForOneTraitLabel,} from "./getPgs.js"
 import {  Match2 } from "./match.js"
@@ -24,7 +24,7 @@ let scoringFiles = (await fetchAll2('https://corsproxy.io/?https://www.pgscatalo
 
 // let traitCategory = "Cancer"
 // console.log("traitCategory", traitCategory)
-let varMin = 50
+let varMin = 5
 let varMax = 150
 // /// get pgs ids for one trait (cancer)
 // let trait = "type 2 diabetes mellitus"
@@ -35,12 +35,16 @@ let varMax = 150
 // let categoryResults = await getPGSidsForOneTraitCategory(traitCategory,traitFiles, scoringFiles, varMin, varMax)
 // console.log("categoryResults",categoryResults)//.map(x=>x.id))//PGSids[trait].map(x=>x.id))
 
-let label = "type 2 diabetes mellitus"
+let label = "type 1 diabetes mellitus"
 let results = await getPGSIds("traitLabels", label, traitFiles, scoringFiles, varMin, varMax)
 console.log("results",results)
 let PGStexts = await getPGSTxts(results.map(x=>x.id))
+let PGStextsHm = await getPGSTxtsHm(results.map(x=>x.id))
+
 let PGS = PGStexts.slice(1,2)
 console.log("PGStexts",PGStexts)
+console.log("PGStextsHm",PGStextsHm)
+
 //---------------------------------------------------
 // let PGStexts = await getPGSTxts(categoryResults.map(x=>x.id))//PGSids[trait].map(x=>x.id))
 // let PGS = PGStexts.slice(1,2)
@@ -74,12 +78,12 @@ function PRS_fun(matrix){
 // data object defined here ----------------------------
 let data = {}
 
-data["PGS"] = PGS
-data["my23"] = my23Txts
-let PRS = PRS_fun(data)
-data["PRS"] = PRS
+// data["PGS"] = PGS
+// data["my23"] = my23Txts
+// let PRS = PRS_fun(data)
+// data["PRS"] = PRS
 
-console.log("data",data )
+// console.log("data",data )
 
 
 
