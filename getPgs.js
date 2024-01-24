@@ -71,6 +71,7 @@ async function loadScore(entry = 'PGS000004', build = 37, range) {
     let txt = ""
     entry = "PGS000000".slice(0, -entry.length) + entry
     // https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/PGS000004/ScoringFiles/Harmonized/PGS000004_hmPOS_GRCh37.txt.gz
+    console.log("url",url)
     const url = `https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/${entry}/ScoringFiles/${entry}.txt.gz` //
     if (range) {
         if (typeof (range) == 'number') {
@@ -105,6 +106,7 @@ async function loadScoreHm(entry = 'PGS000004', build = 37, range) {
     entry = "PGS000000".slice(0, -entry.length) + entry
     // https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/PGS000004/ScoringFiles/Harmonized/PGS000004_hmPOS_GRCh37.txt.gz
     const url = `https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/${entry}/ScoringFiles/Harmonized/${entry}_hmPOS_GRCh${build}.txt.gz` //
+    console.log("url",url)
     if (range) {
         if (typeof (range) == 'number') {
             range = [0, range]
