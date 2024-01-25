@@ -38,11 +38,11 @@ let varMax = 100
 let label = "type 2 diabetes mellitus"
 let results = await getPGSIds("traitLabels", label, traitFiles, scoringFiles, varMin, varMax)
 console.log("results",results)
-let PGStexts = await getPGSTxts(results.map(x=>x.id))
+//let PGStexts = await getPGSTxts(results.map(x=>x.id))
 let PGStextsHm = await getPGSTxtsHm(results.map(x=>x.id))
 
-let PGS = PGStexts.slice(1,2)
-console.log("PGStexts",PGStexts)
+let PGS = PGStextsHm.slice(1,2)
+//console.log("PGStexts",PGStexts)
 console.log("PGStextsHm",PGStextsHm)
 
 //---------------------------------------------------
