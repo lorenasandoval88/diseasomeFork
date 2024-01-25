@@ -13,7 +13,10 @@ let scoresTxtDbHm = localforage.createInstance({
     name: "scoresTxtDbHm",
     storeName: "scoreFilesHm"
 })
-
+let pgsTexts = localforage.createInstance({
+    name: "pgsTexts",
+    storeName: "pgsTexts"
+})
 //---------------------------------------
 // search for traits by different parameters
 function searchTraits(traitFiles){
@@ -304,15 +307,15 @@ async function getPGSTxtsHm(ids) {
 }
 async function getPGSTxts(ids) {
     let data = await Promise.all(ids.map(async (id, i) => {
-    //     let score = await scoresTxtDb.getItem(id)
-    //     console.log('getPGSTxts',score)
+        let score = await scoresTxtDb.getItem(id)
+        console.log('getPGSTxts',score)
 
-    //     if (score == null) {
-    //         score = parsePGS(id, await loadScore(id))
+        if (score == null) {
+            score = parsePGS(id, await loadScore(id))
 
-    //         scoresTxtDb.setItem(id, score);
-    //     }
-        let score = parsePGS(id, await loadScore(id))
+            scoresTxtDb.setItem(id, score);
+        }
+    //    let score = parsePGS(id, await loadScore(id))
 
         return score
     })
