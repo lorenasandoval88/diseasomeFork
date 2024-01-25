@@ -25,7 +25,7 @@ let scoringFiles = (await fetchAll2('https://corsproxy.io/?https://www.pgscatalo
 // let traitCategory = "Cancer"
 // console.log("traitCategory", traitCategory)
 let varMin = 5
-let varMax = 50
+let varMax = 10
 // /// get pgs ids for one trait (cancer)
 // let trait = "type 2 diabetes mellitus"
 // let traitResults = await getPGSidsForOneTraitLabel(trait, traitFiles,scoringFiles, varMin, varMax)
