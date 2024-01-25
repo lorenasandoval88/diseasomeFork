@@ -5,11 +5,11 @@ let pgsCatalogDb = localforage.createInstance({
     name: "pgsCatalogDb",
     storeName: "allTraitAndScoreFiles"
 })
-let scoresTxtDb = localforage.createInstance({
+letpgsTexts = localforage.createInstance({
     name: "scoresTxtDb",
     storeName: "scoreFiles"
 })
-let scoresTxtDbHm = localforage.createInstance({
+letpgsTextsHm = localforage.createInstance({
     name: "scoresTxtDbHm",
     storeName: "scoreFilesHm"
 })
@@ -295,11 +295,11 @@ async function getPGSIds(traitType, trait, traitFiles, scoringFiles, varMin, var
 //Run PGS catalog API calls using pgsIDs and cache
 async function getPGSTxtsHm(ids) {
     let data = await Promise.all(ids.map(async (id, i) => {
-        let score = await scoresTxtDbHm.getItem(id)
+        let score = awaitpgsTextsHm.getItem(id)
 
         if (score == null) {
             score = parsePGS(id, await loadScoreHm(id))
-            scoresTxtDbHm.setItem(id, score);
+           pgsTextsHm.setItem(id, score);
         }
         return score
     }))
@@ -307,13 +307,13 @@ async function getPGSTxtsHm(ids) {
 }
 async function getPGSTxts(ids) {
     let data = await Promise.all(ids.map(async (id, i) => {
-        let score = await scoresTxtDb.getItem(id)
+        let score = awaitpgsTexts.getItem(id)
         console.log('getPGSTxts',score)
 
         if (score == null) {
             score = parsePGS(id, await loadScore(id))
 
-            scoresTxtDb.setItem(id, score);
+           pgsTexts.setItem(id, score);
         }
     //    let score = parsePGS(id, await loadScore(id))
 
