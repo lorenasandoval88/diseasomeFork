@@ -6,12 +6,12 @@ let pgsCatalogDb = localforage.createInstance({
     storeName: "allTraitAndScoreFiles"
 })
 let pgsTexts = localforage.createInstance({
-    name: "scoresTxtDb",
-    storeName: "scoreFiles"
+    name: "pgsTexts",
+    storeName: "pgsTexts"
 })
 let pgsTextsHm = localforage.createInstance({
-    name: "scoresTxtDbHm",
-    storeName: "scoreFilesHm"
+    name: "pgsTextsHm",
+    storeName: "pgsTextsHm"
 })
 
 //---------------------------------------
