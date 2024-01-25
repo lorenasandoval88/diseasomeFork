@@ -5,11 +5,11 @@ let pgsCatalogDb = localforage.createInstance({
     name: "pgsCatalogDb",
     storeName: "allTraitAndScoreFiles"
 })
-pgsTexts = localforage.createInstance({
+let pgsTexts = localforage.createInstance({
     name: "scoresTxtDb",
     storeName: "scoreFiles"
 })
-pgsTextsHm = localforage.createInstance({
+let pgsTextsHm = localforage.createInstance({
     name: "scoresTxtDbHm",
     storeName: "scoreFilesHm"
 })
