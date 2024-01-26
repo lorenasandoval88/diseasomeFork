@@ -8,7 +8,7 @@ import {  Match2 } from "./match.js"
 
 // 23andme data
 let users = await filterUrls()
-let userUrls = (users.slice(0,8)).map(x => x["genotype.download_url"])
+let userUrls = (users.slice(0,3)).map(x => x["genotype.download_url"])
 
 //---------------------------------------------------------------
 
