@@ -245,7 +245,7 @@ async function getPGSidsForOneTraitId( trait, traitFiles, scoringFiles, varMin, 
 async function getPGSIds(traitType, trait, varMin, varMax){
     let res = ""
     let traitFiles = (await fetchAll2('https://www.pgscatalog.org/rest/trait/all')).flatMap(x => x)
-    let scoringFiles = (await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')).flatMap(x => x)
+    let scoringFiles = (await fetchAll2('https://www.pgscatalog.org/rest/score/all')).flatMap(x => x)
 
         if (traitType == "traitLabels") {
             res = await getPGSidsForOneTraitLabel(trait,traitFiles, scoringFiles, varMin, varMax) 
