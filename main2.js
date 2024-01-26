@@ -1,9 +1,7 @@
 import {get23,getUserUrls,filterUrls} from "./get23.js"
-import { parsePGS, loadScore, getPGSTxts, getPGSTxtsHm,
-     getOneCategory, getPGSIds,  fetchAll2,  getPGSidsForOneTraitCategory,
+import { parsePGS, loadScore, getPGSTxts, getPGSTxtsHm, getPGSIds,  fetchAll2,  getPGSidsForOneTraitCategory,
      getPGSidsForOneTraitLabel,} from "./getPgs.js"
 import {  Match2 } from "./match.js"
-console.log("main.js")
 
 //-------------------------------------------------------------------------
 // INPUT DATA
@@ -11,33 +9,16 @@ console.log("main.js")
 // 23andme data
 let users = await filterUrls()
 let userUrls = (users.slice(0,8)).map(x => x["genotype.download_url"])
-console.log("userUrls", userUrls)
-
-// save all trait files and score file metadata in local storage
-let traitFiles = (await fetchAll2('https://www.pgscatalog.org/rest/trait/all')).flatMap(x => x)
-let scoringFiles = (await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')).flatMap(x => x)
 
 //---------------------------------------------------------------
-// make traits and subset scoring files by trait
-// let categories = Array.from(new Set(traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
-// console.log("traits", categories)
 
-// let traitCategory = "Cancer"
-// console.log("traitCategory", traitCategory)
 let varMin = 5
 let varMax = 8
-// /// get pgs ids for one trait (cancer)
-// let trait = "type 2 diabetes mellitus"
-// let traitResults = await getPGSidsForOneTraitLabel(trait, traitFiles,scoringFiles, varMin, varMax)
-// console.log("traitResults",traitResults)
-//----------------------------------------------------------------------
-//let categoryData = await getCategoriesData(categories, traitFiles,scoringFiles)
-// let categoryResults = await getPGSidsForOneTraitCategory(traitCategory,traitFiles, scoringFiles, varMin, varMax)
-// console.log("categoryResults",categoryResults)//.map(x=>x.id))//PGSids[trait].map(x=>x.id))
 
-let label = "type 2 diabetes mellitus"
-let results = await getPGSIds("traitLabels", label, traitFiles, scoringFiles, varMin, varMax)
-console.log("results",results)
+//----------------------------------------------------------------------
+// testing one trait, "type 2 diabetes mellitus"
+let results = await getPGSIds("traitCategories", "Cancer",  varMin, varMax)
+console.log("pgs model scoring files:",results)
 //let PGStexts = await getPGSTxts(results.map(x=>x.id))
 let PGStextsHm = await getPGSTxtsHm(results.map(x=>x.id))
 
@@ -69,7 +50,7 @@ function PRS_fun(matrix){
             let input = { "pgs":matrix.PGS[j], "my23":matrix.my23[i]}
             let res = Match2(input)
                 PRS.push(res)
-                console.log("processing PGS #...",matrix.PGS[j].id)
+                console.log("processing PGS model: ",matrix.PGS[j].id)
         }
     }
 

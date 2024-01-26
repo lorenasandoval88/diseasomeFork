@@ -24,9 +24,34 @@ function searchTraits(traitFiles){
     return obj
 }
 
+//---------------------------------------------------------------
+// fetch all score and trait files and cache to local storage
+async function fetchAll2(url, maxPolls = null) {
+    const allResults = []
+    const counts = (await (await (fetch(url))).json())
+    if (maxPolls == null) maxPolls = Infinity
+    // loop throught the pgs catalog API to get all files using "offset"
+    for (let i = 0; i < Math.ceil(counts.count / 100); i++) { //4; i++) { //maxPolls; i++) {
+        let offset = i * 100
+        let queryUrl = `${url}?limit=100&offset=${offset}`
+        // get trait files and scoring files from indexDB if the exist
+        let cachedData = await pgsCatalogDb.getItem(queryUrl);
+        // cach url and data 
+        if (cachedData !== null) {
+            allResults.push(cachedData)
+        } else if (cachedData == null) {
+            let notCachedData = (await (await fetch(queryUrl)).json()).results
+            pgsCatalogDb.setItem(queryUrl, notCachedData);
+            allResults.push(notCachedData)
+        }
+        if (allResults.length > 40) {
+            break
+        }
+    }
+    return allResults
+}
 // create PGS obj and data --------------------------
 async function parsePGS(id, txt) {
-    console.log('parsePGS')
     let obj = {
         id: id
     }
@@ -70,12 +95,11 @@ async function parsePGS(id, txt) {
 
 async function loadScore(entry = 'PGS000004', build = 37, range) {
     console.log("loadScore")
-
     let txt = ""
     entry = "PGS000000".slice(0, -entry.length) + entry
     // https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/PGS000004/ScoringFiles/Harmonized/PGS000004_hmPOS_GRCh37.txt.gz
     const url = `https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/${entry}/ScoringFiles/${entry}.txt.gz` //
-    console.log("url",url)
+    console.log("loadng unharmonized pgs score from url",url)
 
     if (range) {
         if (typeof (range) == 'number') {
@@ -110,7 +134,7 @@ async function loadScoreHm(entry = 'PGS000004', build = 37, range) {
     entry = "PGS000000".slice(0, -entry.length) + entry
     // https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/PGS000004/ScoringFiles/Harmonized/PGS000004_hmPOS_GRCh37.txt.gz
     const url = `https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/${entry}/ScoringFiles/Harmonized/${entry}_hmPOS_GRCh${build}.txt.gz` //
-    console.log("url",url)
+    console.log("loadng harmonized pgs score from url",url)
     if (range) {
         if (typeof (range) == 'number') {
             range = [0, range]
@@ -141,92 +165,48 @@ async function loadScoreHm(entry = 'PGS000004', build = 37, range) {
 }
 
 //---------------------------------------------------------------
-// get all score and trait files
-async function fetchAll2(url, maxPolls = null) {
-    const allResults = []
-    const counts = (await (await (fetch(url))).json())
-    if (maxPolls == null) maxPolls = Infinity
-    // loop throught the pgs catalog API to get all files using "offset"
-    for (let i = 0; i < Math.ceil(counts.count / 100); i++) { //4; i++) { //maxPolls; i++) {
-        let offset = i * 100
-        let queryUrl = `${url}?limit=100&offset=${offset}`
-        // get trait files and scoring files from indexDB if the exist
-        let cachedData = await pgsCatalogDb.getItem(queryUrl);
-        // cach url and data 
-        if (cachedData !== null) {
-            allResults.push(cachedData)
-        } else if (cachedData == null) {
-            let notCachedData = (await (await fetch(queryUrl)).json()).results
-            pgsCatalogDb.setItem(queryUrl, notCachedData);
-            allResults.push(notCachedData)
-        }
-        if (allResults.length > 40) {
-            break
-        }
-    }
-    return allResults
-}
-
-//---------------------------------------------------------------
 // 1. subset ids by traitFile trait_categories and variant number
 // 2. subset ids by traitFile label and variant number
 // 3. get pgs ids based on trait label, catefory or name
 
 // 1.
 // get all trait categories and info
-async function getCategoriesData(traitCategories, traitFiles, scoringFiles) {
-    console.log("getCategoriesData**********")
-    let obj = {}
+async function getAllCategories(traitCategories, traitFiles, scoringFiles) {
+    let outerObj = {}
     traitCategories.map(async x => {
-        //console.log("one cat",x)
-        let res = getOneCategory(x, traitFiles, scoringFiles)
-        res.then((res) => {
-            obj[x] = res;
-            //console.log("res",res)
+        let traitFilesArr = []
+        let pgsIds = []
+        traitFiles.map(tfile => {
+            if (tfile["trait_categories"].includes(x)) {
+                traitFilesArr.push(tfile)
+            }
         })
-    })
-    return obj
-}
-// get ids and info for one trait category
-async function getOneCategory(traitCategory, traitFiles, scoringFiles) {
-    console.log("getOneCategory")
-    let traitFilesArr = []
-    let pgsIds = []
-    traitFiles.map(tfile => {
-        if (tfile["trait_categories"].includes(traitCategory)) {
-            traitFilesArr.push(tfile)
+        if (traitFilesArr.length != 0) {
+            pgsIds.push(traitFilesArr.flatMap(x => x.associated_pgs_ids).sort().filter((v, i) => traitFilesArr.flatMap(x => x.associated_pgs_ids).sort().indexOf(v) == i))
         }
-    })
-    if (traitFilesArr.length != 0) {
-        pgsIds.push(traitFilesArr.flatMap(x => x.associated_pgs_ids).sort().filter((v, i) => traitFilesArr.flatMap(x => x.associated_pgs_ids).sort().indexOf(v) == i))
-    }
-    let pgsIds2 = pgsIds.flatMap(x => x)
-    let pgsInfo = pgsIds2.map(id => { // pgs variant number info
-        let result = scoringFiles.filter(obj => {
-            return obj.id === id
+        let pgsIds2 = pgsIds.flatMap(x => x)
+        let pgsInfo = pgsIds2.map(id => { // pgs variant number info
+            let result = scoringFiles.filter(obj => {
+                return obj.id === id
+            })
+            return result[0]
         })
-        return result[0]
+        let obj = {}
+        obj["traitCategory"] = x
+        obj["count"] = pgsIds2.length
+        obj["pgsIds"] = pgsIds2
+        obj["pgsInfo"] = pgsInfo
+        obj["traitFiles"] = traitFilesArr
+        outerObj[x] = obj;
     })
-    let obj = {}
-    obj["traitCategory"] = traitCategory
-    obj["count"] = pgsIds2.length
-    obj["pgsIds"] = pgsIds2
-    obj["pgsInfo"] = pgsInfo
-    obj["traitFiles"] = traitFilesArr
-    return obj
+    return outerObj
 }
-
 
 // subset one category by variant number
 async function getPGSidsForOneTraitCategory( category,traitFiles, scoringFiles, varMin, varMax,) {
+    console.log("getPGSidsForOneTraitCategory:", category, ", var min and max: ", varMin, varMax)
     let categories = Array.from(new Set(traitFiles.flatMap(x => x["trait_categories"]).sort().filter(e => e.length).map(JSON.stringify)), JSON.parse)
-
-    let traitCategories = await getCategoriesData(categories, traitFiles, scoringFiles)
-    // filter ids that don't have variant number/info
-    console.log("getPGSidsForOneTraitCategory-----------")
-    console.log("Category:", category)
-    console.log("var min and max: ", varMin, varMax)
-    let traitCategories2 = traitCategories[category].pgsInfo
+    let traitCategories2 =  (await ((await getAllCategories(categories, traitFiles, scoringFiles))[category])).pgsInfo
         // filter ids that don't have variant number/info
         .filter(x => x != undefined)
         .filter(x => x.variants_number < varMax & x.variants_number > varMin)
@@ -236,13 +216,10 @@ async function getPGSidsForOneTraitCategory( category,traitFiles, scoringFiles, 
 // 2. label
 
 async function getPGSidsForOneTraitLabel( trait, traitFiles, scoringFiles, varMin, varMax) {
-    console.log("getPGSidsForOneTraitLabel-----------------------")
-    console.log("trait:", trait)
-    console.log("var min and max: ", varMin, varMax)
+    console.log("getPGSidsForOneTraitLabel:", trait, ", var min and max: ", varMin, varMax)
     let ids = traitFiles
         .filter(x => x.label == trait)
         .map(x => x.associated_pgs_ids)[0]
-
     let ids2 = scoringFiles
         .filter(x => ids.includes(x.id))
         .filter(x => x != undefined)
@@ -252,13 +229,10 @@ async function getPGSidsForOneTraitLabel( trait, traitFiles, scoringFiles, varMi
 // 2. ids (EFO)
 
 async function getPGSidsForOneTraitId( trait, traitFiles, scoringFiles, varMin, varMax) {
-    console.log("getPGSidsForOneTraiId-----------------------")
-    console.log("trait:", trait)
-    console.log("var min and max: ", varMin, varMax)
+    console.log("getPGSidsForOneTraiId:", trait, ", var min and max: ", varMin, varMax)
     let ids = traitFiles
         .filter(x => x.id == trait)
         .map(x => x.associated_pgs_ids)[0]
-
     let ids2 = scoringFiles
         .filter(x => ids.includes(x.id))
         .filter(x => x != undefined)
@@ -268,32 +242,27 @@ async function getPGSidsForOneTraitId( trait, traitFiles, scoringFiles, varMin, 
 //-----------------------------------------------------------------------------------------
 // 3. 
 
-async function getPGSIds(traitType, trait, traitFiles, scoringFiles, varMin, varMax){
+async function getPGSIds(traitType, trait, varMin, varMax){
     let res = ""
+    let traitFiles = (await fetchAll2('https://www.pgscatalog.org/rest/trait/all')).flatMap(x => x)
+    let scoringFiles = (await fetchAll2('https://corsproxy.io/?https://www.pgscatalog.org/rest/score/all')).flatMap(x => x)
+
         if (traitType == "traitLabels") {
-            console.log("traitCategories!")
             res = await getPGSidsForOneTraitLabel(trait,traitFiles, scoringFiles, varMin, varMax) 
-
         } else if(traitType == "traitCategories") {
-            console.log("traitCategories!")
             res = await  getPGSidsForOneTraitCategory( trait,traitFiles, scoringFiles, varMin, varMax,)
-
         } else if(traitType == "traitIds") {
-            console.log("traitIds!")
             res = await  getPGSidsForOneTraitId( trait, traitFiles, scoringFiles, varMin, varMax)
         } else {
             res = "no trait type"
-            console.log("invalid trait type!")
+            console.log("invalid trait type given!")
         }
-        console.log("res",res)
         return res
     }
-// Get pgs scores in text format----------------------------------------
-//Run PGS catalog API calls using pgsIDs and cache
+// Get pgs scores in text format from cache or new--------------------------------
 async function getPGSTxtsHm(ids) {
     let data = await Promise.all(ids.map(async (id, i) => {
         let score = await pgsTextsHm.getItem(id)
-
         if (score == null) {
             score = parsePGS(id, await loadScoreHm(id))
            pgsTextsHm.setItem(id, score);
@@ -305,23 +274,15 @@ async function getPGSTxtsHm(ids) {
 async function getPGSTxts(ids) {
     let data = await Promise.all(ids.map(async (id, i) => {
         let score = await pgsTexts.getItem(id)
-        console.log('getPGSTxts',score)
-
         if (score == null) {
             score = parsePGS(id, await loadScore(id))
-
            pgsTexts.setItem(id, score);
         }
-    //    let score = parsePGS(id, await loadScore(id))
-
         return score
     })
     )
     return data
 }
-// traitFiles > ids> scoreFiles
-
-
 
 export {
     searchTraits,
@@ -330,8 +291,7 @@ export {
     parsePGS,
     loadScore,
     fetchAll2,
-    getOneCategory,
-    getCategoriesData,
+    getAllCategories,
     getPGSidsForOneTraitCategory,
     getPGSidsForOneTraitLabel,
     getPGSIds

@@ -12,7 +12,6 @@ import {
     parsePGS,
     loadScore,
     fetchAll2,
-    getOneCategory,
     getPGSidsForOneTraitCategory,
     getPGSidsForOneTraitLabel,
     getPGSIds
@@ -39,7 +38,6 @@ export {
     parsePGS,
     loadScore,
     fetchAll2,
-    getOneCategory,
     getPGSIds,
     getPGSidsForOneTraitCategory,
     getPGSidsForOneTraitLabel,
